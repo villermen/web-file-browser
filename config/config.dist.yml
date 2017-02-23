@@ -1,0 +1,36 @@
+# Copy this file to config.yml and adjust
+config:
+    rootdir: ~
+    webroot: ~
+    webpageIndexFiles:
+        - index.html
+        - index.php
+    directories:
+        /:
+            display:
+                webpages: false
+                directories: false
+                files: false
+            blacklist:
+                webpages: []
+                directories: []
+                files: []
+                all: []
+            whitelist:
+                webpages: []
+                directories: []
+                files: []
+            recursive: true
+            description: "Description"
+        asdf/foo:
+            blacklist:
+                all:
+                - genericblacklist2
+            recursive: true
+        asdf/foo/bar:
+            display:
+                files: true
+            blacklist:
+                webpages:
+                - webpage3
+            description: "Derp."

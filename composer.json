@@ -1,0 +1,20 @@
+{
+    "name": "villermen/web-file-browser",
+    "description": "Configurable web file browser for listing files, directories and webpages.",
+    "type": "project",
+    "require": {
+        "symfony/yaml": "^3.2",
+        "symfony/http-foundation": "^3.2",
+        "php": ">=7.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Villermen",
+            "email": "villermen@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "": "src/" }
+    }
+}

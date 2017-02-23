@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Viller's web file browser</title>
+        <link rel="stylesheet" href="style/default.css" />
+    </head>
+
+    <body>
+        <h1 class="title"><?php echo htmlspecialchars($currentDirectory); ?></h1>
+
+        <div class="listing-container">
+            <?php if ($webpages): ?>
+                <div class="listing listing-webpages">
+                    <?php foreach($webpages as $webpage): ?>
+                        <a class="list-item list-item-webpage">
+                            <div class="list-item--name list-item-webpage--name"><?php echo htmlspecialchars($webpage["name"]); ?></div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($directories): ?>
+                <div class="listing listing-directories">
+                    <?php foreach($directories as $directory): ?>
+                        <a class="list-item list-item-directory">
+                            <div class="list-item--name list-item-directory--name"><?php echo htmlspecialchars($directory["name"]); ?></div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($files): ?>
+                <div class="listing listing-files">
+                    <?php foreach($files as $file): ?>
+                        <a class="list-item list-item-file">
+                            <div class="list-item--name list-item-file--name"><?php echo htmlspecialchars($file["name"]); ?></div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </body>
+</html>
