@@ -7,7 +7,11 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Yaml\Yaml;
+use Twig_Environment;
+use Twig_Loader_Filesystem;
 
+
+// TODO: Move listing specific code to Listing.php
 class App
 {
     /**
@@ -47,8 +51,12 @@ class App
         $directorySettings = $this->getDirectorySettings($this->getRequestDirectoryRelative());
         $items = $this->getItems($directorySettings);
 
-        $view = new View("listing.phtml");
-        $response = new Response($view->render([
+        $twigLoader = new Twig_Loader_Filesystem("views/");
+        $twig = new Twig_Environment($twigLoader, [
+            "autoescape" => "html"
+        ]);
+
+        $response = new Response($twig->render("listing.html.twig", [
             "webpages" => $items["webpages"],
             "directories" => $items["directories"],
             "files" => $items["files"],
@@ -222,20 +230,26 @@ class App
         $directoryIterator = new DirectoryIterator($this->getRequestDirectoryAbsolute());
 
         foreach($directoryIterator as $fileInfo) {
+            $filename = $fileInfo->getFilename();
+
+            // PHP apparently returns filenames with Windows-1252 encoding on Windows...
+            if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN") {
+                $filename = mb_convert_encoding($filename, "UTF-8", "Windows-1252");
+            }
+
             // Make sure the entry is showable
-            if ($fileInfo->isReadable() && $fileInfo->getFilename()[0] != ".") {
+            if ($fileInfo->isReadable() && $filename[0] != ".") {
                 if ($fileInfo->isDir()) {
-                    $directoryPath = Path::normalizeDirectoryPath($fileInfo->getPathname(), false);
+                    $path = Path::normalizeDirectoryPath($fileInfo->getPathname(), false);
 
                     if ($directorySettings->isDisplayDirectories()) {
                         // TODO: Directories need to be accessible
-                        $directorySettings = $this->getDirectorySettings($directoryPath);
+                        $directorySettings = $this->getDirectorySettings($path);
                         if ($directorySettings->isDisplayWebpages() ||
                             $directorySettings->isDisplayDirectories() ||
                             $directorySettings->isDisplayFiles()) {
                             $items["directories"][] = [
-                                "name" => $fileInfo->getFilename(),
-                                "path" => $directoryPath
+                                "name" => $filename
                             ];
                         }
                     }
@@ -243,10 +257,9 @@ class App
                     if ($directorySettings->isDisplayWebpages()) {
                         // TODO: Webpages need to have a registered index
                         foreach($this->config["webpageIndexFiles"] as $webpageIndexFile) {
-                            if (file_exists($directoryPath . $webpageIndexFile)) {
+                            if (file_exists($path . $webpageIndexFile)) {
                                 $items["webpages"][] = [
-                                    "name" => $fileInfo->getFilename(),
-                                    "path" => $directoryPath
+                                    "name" => $filename
                                 ];
 
                                 break;
@@ -255,8 +268,7 @@ class App
                     }
                 } elseif ($directorySettings->isDisplayFiles() && $fileInfo->isFile()) {
                     $items["files"][] = [
-                        "name" => $fileInfo->getFilename(),
-                        "path" => Path::normalizeFilePath($fileInfo->getPathname(), false),
+                        "name" => $filename,
                         "size" => $fileInfo->getSize()
                     ];
                 }

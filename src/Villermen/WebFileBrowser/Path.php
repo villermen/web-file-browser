@@ -3,6 +3,7 @@
 namespace Villermen\WebFileBrowser;
 
 use Exception;
+use SplFileInfo;
 
 class Path
 {

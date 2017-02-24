@@ -1,6 +1,9 @@
 # Copy this file to config.yml and adjust
 config:
+    # The base directory of the file browser
     rootdir: ~
+    # The relative web path that points to the same location as the rootdir
+    # Can be ignored if not displaying webpages
     webroot: ~
     webpageIndexFiles:
         - index.html
@@ -22,12 +25,12 @@ config:
                 files: []
             recursive: true
             description: "Description"
-        asdf/foo:
+        asdf/foo/:
             blacklist:
                 all:
                 - genericblacklist2
             recursive: true
-        asdf/foo/bar:
+        asdf/foo/bar/:
             display:
                 files: true
             blacklist:
