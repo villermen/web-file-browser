@@ -60,7 +60,7 @@ class App
             "webpages" => $items["webpages"],
             "directories" => $items["directories"],
             "files" => $items["files"],
-            "currentDirectory" => $this->requestDirectoryRelative,
+            "currentDirectory" => Path::fixEncoding($this->requestDirectoryRelative),
             "settings" => $directorySettings
         ]));
         $response->send();
@@ -69,7 +69,9 @@ class App
     protected function resolveRequestedPath(Request $request)
     {
         // Parse requested directory
-        $this->requestDirectoryRelative = Path::normalizeDirectoryPath(ltrim($request->getPathInfo(), "/"), false);
+        $path = urldecode($request->getPathInfo());
+        $path = ltrim(Path::normalizeDirectoryPath($path, false), "/");
+        $this->requestDirectoryRelative = Path::breakEncoding($path);
 
         // Prevent directory traversal
         if (strpos("/" . $this->requestDirectoryRelative, "/../") !== false) {
@@ -84,7 +86,7 @@ class App
                 throw new Exception("Requested directory is not actually a directory.");
             }
         } catch (Exception $ex) {
-            throw new Exception("Requested directory does not exist.", 0, $ex);
+            throw new Exception("Requested directory (" . $this->requestDirectoryRelative . ") does not exist.", 0, $ex);
         }
     }
 
@@ -230,12 +232,7 @@ class App
         $directoryIterator = new DirectoryIterator($this->getRequestDirectoryAbsolute());
 
         foreach($directoryIterator as $fileInfo) {
-            $filename = $fileInfo->getFilename();
-
-            // PHP apparently returns filenames with Windows-1252 encoding on Windows...
-            if (strtoupper(substr(PHP_OS, 0, 3)) == "WIN") {
-                $filename = mb_convert_encoding($filename, "UTF-8", "Windows-1252");
-            }
+            $filename = Path::fixEncoding($fileInfo->getFilename());
 
             // Make sure the entry is showable
             if ($fileInfo->isReadable() && $filename[0] != ".") {
