@@ -14,6 +14,7 @@
         <div class="listing-container">
             {% if webpages %}
                 <div class="listing listing-webpages">
+                    <div class="list-header list-wheader-webpages">Webpages</div>
                     {% for webpage in webpages %}
                         <a class="list-item list-item-webpage">
                             <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
@@ -24,6 +25,7 @@
 
             {% if directories %}
                 <div class="listing listing-directories">
+                    <div class="list-header list-wheader-directories">Directories</div>
                     {% for directory in directories %}
                         <a class="list-item list-item-directory">
                             <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
@@ -34,6 +36,7 @@
 
             {% if files %}
                 <div class="listing listing-files">
+                    <div class="list-header list-wheader-files">Files</div>
                     {% for file in files %}
                         <a class="list-item list-file-webpage">
                             <div class="list-item--name list-item-file--name">{{ file.name }}</div>
