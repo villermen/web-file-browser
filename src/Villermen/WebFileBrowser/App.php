@@ -199,7 +199,7 @@ class App
                     }
 
                     // Description is only ever applicable to the requested directory
-                    if ($directoryConfig == $lastConfigDirectory) {
+                    if ($configDirectory == $lastConfigDirectory) {
                         if ($directoryConfig["description"]) {
                             $settings->setDescription((string)$directoryConfig["description"]);
                         }
@@ -213,12 +213,12 @@ class App
 
     protected function getRootDirectory()
     {
-        return Path::normalizeDirectoryPath($this->config["rootdir"]);
+        return Path::normalizeDirectoryPath(Path::breakEncoding($this->config["rootdir"]));
     }
 
     protected function getWebroot()
     {
-        return Path::normalizeDirectoryPath($this->config["webroot"], false);
+        return Path::normalizeDirectoryPath(Path::breakEncoding($this->config["webroot"]), false);
     }
 
     protected function getItems(DirectorySettings $directorySettings)
@@ -281,21 +281,20 @@ class App
 
     protected function loadConfig(string $configFile)
     {
-        $config = Yaml::parse(file_get_contents($configFile))["config"];
+        $this->config = Yaml::parse(file_get_contents($configFile))["config"];
 
-        if (!is_dir($config["rootdir"])) {
+        if (!is_dir($this->getRootDirectory())) {
             throw new Exception("rootdir config option does not point to a valid directory.");
         }
 
         // Normalize directories
         $normalizedDirectorySettings = [];
-        foreach($config["directories"] as $directory => $directorySettings) {
+        foreach($this->config["directories"] as $directory => $directorySettings) {
             $normalizedDirectory = Path::normalizeDirectoryPath(ltrim($directory, "/"), false);
+            $normalizedDirectory = Path::breakEncoding($normalizedDirectory);
             $normalizedDirectorySettings[$normalizedDirectory] = $directorySettings;
         }
-        $config["directories"] = $normalizedDirectorySettings;
-
-        $this->config = $config;
+        $this->config["directories"] = $normalizedDirectorySettings;
     }
 
     protected function filterNames(array $items, array $blacklist, array $whitelist) : array
@@ -330,6 +329,7 @@ class App
         return $items;
     }
 
+    /** @noinspection PhpUnusedPrivateMethodInspection */
     private static function listItemToRegex($listItem)
     {
         return "/^" . str_replace("*", ".*", $listItem) . "$/i";
