@@ -6,6 +6,14 @@ namespace Villermen\WebFileBrowser;
 class DirectorySettings
 {
     /**
+     * Contains all parsed configuration directories in order.
+     * For debugging purposes.
+     *
+     * @var string[]
+     */
+    protected $parsedConfigurations = [];
+
+    /**
      * @var bool
      */
     protected $displayWebpages = false;
@@ -261,5 +269,21 @@ class DirectorySettings
     public function addFileBlacklist(array $fileBlacklist)
     {
         $this->fileBlacklist = array_merge($this->fileBlacklist, $fileBlacklist);
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getParsedConfigurations(): array
+    {
+        return $this->parsedConfigurations;
+    }
+
+    /**
+     * @param string $parsedConfiguration
+     */
+    public function addParsedConfiguration(string $parsedConfiguration)
+    {
+        $this->parsedConfigurations[] = $parsedConfiguration;
     }
 }

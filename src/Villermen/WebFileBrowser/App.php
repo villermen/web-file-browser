@@ -10,7 +10,6 @@ use Symfony\Component\Yaml\Yaml;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 
-
 // TODO: Move listing specific code to Listing.php
 class App
 {
@@ -205,6 +204,8 @@ class App
                         }
                     }
                 }
+
+                $settings->addParsedConfiguration($configDirectory);
             }
         }
 
