@@ -116,7 +116,7 @@ class App
     /**
      * Parses the configuration for the specified request path.
      *
-     * @param string $requestPath
+     * @param string $requestPath Must be normalized and not start with a slash.
      * @return DirectorySettings
      */
     protected function getDirectorySettings(string $requestPath) : DirectorySettings
@@ -267,7 +267,8 @@ class App
                 } elseif ($directorySettings->isDisplayFiles() && $fileInfo->isFile()) {
                     $items["files"][] = [
                         "name" => $filename,
-                        "size" => $fileInfo->getSize()
+                        "size" => self::bytesize($fileInfo->getSize()),
+                        "bytes" => $fileInfo->getSize()
                     ];
                 }
             }
@@ -334,5 +335,34 @@ class App
     private static function listItemToRegex($listItem)
     {
         return "/^" . str_replace("*", ".*", $listItem) . "$/i";
+    }
+
+    private static function bytesize(int $size)
+    {
+        $suffixes = [
+            "B", "KiB", "MiB", "GiB" // "TiB", "PiB", "EiB", "ZiB", "YiB"
+        ];
+
+        $level = 1;
+        for ($exponent = 0; $exponent < count($suffixes); $exponent++) {
+            $nextLevel = pow(1024, $exponent + 1);
+            if ($nextLevel > $size) {
+                $smallSize = $size / $level;
+
+                if ($smallSize < 10) {
+                    $decimals = 2;
+                } elseif ($smallSize < 100) {
+                    $decimals = 1;
+                } else {
+                    $decimals = 0;
+                }
+
+                return round($smallSize, $decimals) . " " . $suffixes[$exponent];
+            }
+
+            $level = $nextLevel;
+        }
+
+        return "Large.";
     }
 }

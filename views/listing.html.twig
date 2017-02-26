@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />
@@ -40,6 +40,7 @@
                     {% for file in files %}
                         <a class="list-item list-file-webpage">
                             <div class="list-item--name list-item-file--name">{{ file.name }}</div>
+                            <div class="list-item--name list-item-file--size">{{ file.size }}</div>
                         </a>
                     {% endfor %}
                 </div>
