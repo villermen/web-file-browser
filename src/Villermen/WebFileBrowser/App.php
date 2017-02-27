@@ -46,7 +46,7 @@ class App
     public function __construct(string $configFile)
     {
         // Change to project root for relative directory pointing
-        chdir(__DIR__ . "../../../../");
+        chdir(__DIR__ . "/../../../");
 
         $this->configFile = $configFile;
     }
@@ -62,7 +62,7 @@ class App
         $directorySettings = $this->getDirectorySettings($this->getRequestDirectoryAbsolute());
         $items = $this->getItems($directorySettings);
 
-        $twigLoader = new Twig_Loader_Filesystem(getcwd() . "/views/");
+        $twigLoader = new Twig_Loader_Filesystem("views/");
         $twig = new Twig_Environment($twigLoader, [
             "autoescape" => "html"
         ]);
