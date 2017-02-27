@@ -62,7 +62,7 @@ class App
         $directorySettings = $this->getDirectorySettings($this->getRequestDirectoryAbsolute());
         $items = $this->getItems($directorySettings);
 
-        $twigLoader = new Twig_Loader_Filesystem("views/");
+        $twigLoader = new Twig_Loader_Filesystem(getcwd() . "/views/");
         $twig = new Twig_Environment($twigLoader, [
             "autoescape" => "html"
         ]);
