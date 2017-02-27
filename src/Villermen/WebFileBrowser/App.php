@@ -21,12 +21,7 @@ class App
     /**
      * @var string
      */
-    protected $requestDirectoryAbsolute;
-
-    /**
-     * @var string
-     */
-    protected $requestDirectoryRelative;
+    protected $requestDirectory;
 
     /**
      * @var DirectorySettings
@@ -59,7 +54,7 @@ class App
 
         $this->resolvePaths($request);
 
-        $directorySettings = $this->getDirectorySettings($this->getRequestDirectoryAbsolute());
+        $directorySettings = $this->getDirectorySettings($this->requestDirectory);
         $items = $this->getItems($directorySettings);
 
         $twigLoader = new Twig_Loader_Filesystem("views/");
@@ -71,7 +66,7 @@ class App
             "webpages" => $items["webpages"],
             "directories" => $items["directories"],
             "files" => $items["files"],
-            "currentDirectory" => Path::fixEncoding($this->requestDirectoryRelative),
+            "currentDirectory" => Path::fixEncoding($this->makeRelative($this->requestDirectory)),
             "settings" => $directorySettings
         ]));
         $response->send();
@@ -84,23 +79,23 @@ class App
 
         // Parse requested directory
         $path = urldecode($request->getPathInfo());
-        $path = ltrim(Path::normalizeDirectory($path), "/");
-        $this->requestDirectoryRelative = Path::breakEncoding($path);
+        $path = Path::normalizeDirectory($path);
+        $path = Path::breakEncoding($path);
 
         // Prevent directory traversal
-        if (strpos("/" . $this->requestDirectoryRelative, "/../") !== false) {
+        if (strpos("/" . $path, "/../") !== false) {
             throw new Exception("Directory traversal.");
         }
 
         // Resolve to absolute directory
         try {
-            $this->requestDirectoryAbsolute = Path::normalizeDirectory($this->config["rootdir"] . $this->requestDirectoryRelative, true);
+            $this->requestDirectory = Path::normalizeDirectory($this->config["rootdir"] . $path, true);
 
-            if (!is_dir($this->requestDirectoryAbsolute)) {
+            if (!is_dir($this->requestDirectory)) {
                 throw new Exception("Requested directory is not actually a directory.");
             }
         } catch (Exception $ex) {
-            throw new Exception("Requested directory (" . $this->requestDirectoryRelative . ") does not exist.", 0, $ex);
+            throw new Exception("Requested directory (" . $this->requestDirectory . ") does not exist.", 0, $ex);
         }
     }
 
@@ -110,22 +105,6 @@ class App
     public function getConfig()
     {
         return $this->config;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRequestDirectoryRelative(): string
-    {
-        return $this->requestDirectoryRelative;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRequestDirectoryAbsolute(): string
-    {
-        return $this->requestDirectoryAbsolute;
     }
 
     /**
@@ -235,7 +214,7 @@ class App
             "files" => []
         ];
 
-        $directoryIterator = new DirectoryIterator($this->getRequestDirectoryAbsolute());
+        $directoryIterator = new DirectoryIterator($this->requestDirectory);
 
         foreach($directoryIterator as $fileInfo) {
             $filename = Path::fixEncoding($fileInfo->getFilename());
@@ -253,7 +232,7 @@ class App
                             $subdirectorySettings->isDisplayFiles()) {
                             $items["directories"][] = [
                                 "name" => $filename,
-                                "url" => $this->browserBaseUrl . $this->getRelativeDirectory($path)
+                                "url" => $this->browserBaseUrl . $this->makeRelative($path)
                             ];
                         }
                     }
@@ -264,7 +243,7 @@ class App
                             if (file_exists($path . $webpageIndexFile)) {
                                 $items["webpages"][] = [
                                     "name" => $filename,
-                                    "url" => $this->config["webroot"] . $this->getRelativeDirectory($path)
+                                    "url" => $this->config["webroot"] . $this->makeRelative($path)
                                 ];
 
                                 break;
@@ -276,7 +255,7 @@ class App
 
                     $items["files"][] = [
                         "name" => $filename,
-                        "url" =>  $this->config["webroot"] . $this->getRelativeDirectory($path),
+                        "url" =>  $this->config["webroot"] . $this->makeRelative($path),
                         "size" => self::bytesize($fileInfo->getSize()),
                         "bytes" => $fileInfo->getSize()
                     ];
@@ -386,7 +365,7 @@ class App
         return "Large.";
     }
 
-    private function getRelativeDirectory(string $absoluteDirectory)
+    private function makeRelative(string $absoluteDirectory)
     {
         if (substr($absoluteDirectory, 0, strlen($this->config["rootdir"])) != $this->config["rootdir"]) {
             throw new Exception("Directory to make relative ({$absoluteDirectory}) is not a child of root directory.");
