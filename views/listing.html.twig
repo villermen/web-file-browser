@@ -27,7 +27,7 @@
                 <div class="listing listing-directories">
                     <div class="list-header list-wheader-directories">Directories</div>
                     {% for directory in directories %}
-                        <a class="list-item list-item-directory">
+                        <a class="list-item list-item-directory" href="{{ directory.url }}">
                             <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
                         </a>
                     {% endfor %}
@@ -38,7 +38,7 @@
                 <div class="listing listing-files">
                     <div class="list-header list-wheader-files">Files</div>
                     {% for file in files %}
-                        <a class="list-item list-file-webpage">
+                        <a class="list-item list-file-webpage" href="">
                             <div class="list-item--name list-item-file--name">{{ file.name }}</div>
                             <div class="list-item--name list-item-file--size">{{ file.size }}</div>
                         </a>

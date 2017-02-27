@@ -13,7 +13,7 @@ class Path
      *
      * @throws Exception
      */
-    public static function normalizeFilePath(string $path, bool $resolve = true): string
+    public static function normalizeFile(string $path, bool $resolve = false): string
     {
         if ($resolve) {
             $path = realpath($path);
@@ -25,12 +25,19 @@ class Path
 
         $path = str_replace("\\", "/", $path);
 
+        // Remove optional scheme to add back later
+        $scheme = "";
+        $path = preg_replace_callback("/^[a-z0-9+\.\-]+:\/\//", function ($matches) use (&$scheme) {
+            $scheme = $matches[0];
+            return "";
+        }, $path);
+
         $replacements = 0;
         do {
             $path = str_replace(["/./", "//"], "/", $path, $replacements);
         } while ($replacements > 0);
 
-        return $path;
+        return $scheme . $path;
     }
 
     /**
@@ -38,9 +45,9 @@ class Path
      * @param bool $resolve
      * @return string
      */
-    public static function normalizeDirectoryPath(string $path, $resolve = true)
+    public static function normalizeDirectory(string $path, $resolve = false)
     {
-        return rtrim(self::normalizeFilePath($path, $resolve), "/") . "/";
+        return rtrim(self::normalizeFile($path, $resolve), "/") . "/";
     }
 
     /**
