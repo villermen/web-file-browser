@@ -38,17 +38,24 @@ class App
      */
     protected $browserBaseUrl;
 
+    /**
+     * @var string
+     */
+    protected $configFile;
+
     public function __construct(string $configFile)
     {
         // Change to project root for relative directory pointing
         chdir(__DIR__ . "../../../../");
 
-        $this->loadConfig($configFile);
+        $this->configFile = $configFile;
     }
 
     public function run()
     {
         $request = Request::createFromGlobals();
+
+        $this->config = $this->loadConfig($this->configFile, $request);
 
         $this->resolvePaths($request);
 
@@ -87,7 +94,7 @@ class App
 
         // Resolve to absolute directory
         try {
-            $this->requestDirectoryAbsolute = Path::normalizeDirectory($this->getRootDirectory() . $this->requestDirectoryRelative, true);
+            $this->requestDirectoryAbsolute = Path::normalizeDirectory($this->config["rootdir"] . $this->requestDirectoryRelative, true);
 
             if (!is_dir($this->requestDirectoryAbsolute)) {
                 throw new Exception("Requested directory is not actually a directory.");
@@ -220,16 +227,6 @@ class App
         return $settings;
     }
 
-    protected function getRootDirectory()
-    {
-        return Path::normalizeDirectory(Path::breakEncoding($this->config["rootdir"]), true);
-    }
-
-    protected function getWebroot()
-    {
-        return Path::normalizeDirectory(Path::breakEncoding($this->config["webroot"]));
-    }
-
     protected function getItems(DirectorySettings $directorySettings)
     {
         $items = [
@@ -247,6 +244,7 @@ class App
             if ($fileInfo->isReadable() && $filename[0] != ".") {
                 if ($fileInfo->isDir()) {
                     $path = Path::normalizeDirectory($fileInfo->getPathname());
+
                     if ($directorySettings->isDisplayDirectories()) {
                         // Directories need to be accessible by this browser
                         $subdirectorySettings = $this->getDirectorySettings($path);
@@ -265,7 +263,8 @@ class App
                         foreach($this->config["webpageIndexFiles"] as $webpageIndexFile) {
                             if (file_exists($path . $webpageIndexFile)) {
                                 $items["webpages"][] = [
-                                    "name" => $filename
+                                    "name" => $filename,
+                                    "url" => $this->config["webroot"] . $this->getRelativeDirectory($path)
                                 ];
 
                                 break;
@@ -273,8 +272,11 @@ class App
                         }
                     }
                 } elseif ($directorySettings->isDisplayFiles() && $fileInfo->isFile()) {
+                    $path = Path::normalizeFile($fileInfo->getPathname());
+
                     $items["files"][] = [
                         "name" => $filename,
+                        "url" =>  $this->config["webroot"] . $this->getRelativeDirectory($path),
                         "size" => self::bytesize($fileInfo->getSize()),
                         "bytes" => $fileInfo->getSize()
                     ];
@@ -289,23 +291,32 @@ class App
         return $items;
     }
 
-    protected function loadConfig(string $configFile)
+    protected function loadConfig(string $configFile, Request $request)
     {
-        $this->config = Yaml::parse(file_get_contents($configFile))["config"];
+        $config = Yaml::parse(file_get_contents($configFile))["config"];
 
-        if (!is_dir($this->getRootDirectory())) {
-            throw new Exception("rootdir config option does not point to a valid directory.");
+        // Parse and verify rootdir
+        try {
+            $config["rootdir"] = Path::normalizeDirectory(Path::breakEncoding($config["rootdir"]), true);
+        } catch (Exception $ex) {
+            throw new Exception("rootdir config option does not point to a valid directory.", 0, $ex);
         }
+
+        // Parse webroot
+        $webroot = $request->getSchemeAndHttpHost() . Path::breakEncoding($config["webroot"]);
+        $config["webroot"] = Path::normalizeDirectory($webroot);
 
         // Normalize directories
-        $normalizedDirectorySettings = [];
-        foreach($this->config["directories"] as $directory => $directorySettings) {
+        $parsedDirectorySettings = [];
+        foreach($config["directories"] as $directory => $directorySettings) {
             $directory = Path::breakEncoding($directory);
-            $directory = $this->getRootDirectory() . ltrim($directory, "/");
+            $directory = $config["rootdir"] . ltrim($directory, "/");
             $directory = Path::normalizeDirectory($directory);
-            $normalizedDirectorySettings[$directory] = $directorySettings;
+            $parsedDirectorySettings[$directory] = $directorySettings;
         }
-        $this->config["directories"] = $normalizedDirectorySettings;
+        $config["directories"] = $parsedDirectorySettings;
+
+        return $config;
     }
 
     protected function filterNames(array $items, array $blacklist, array $whitelist) : array
@@ -377,10 +388,10 @@ class App
 
     private function getRelativeDirectory(string $absoluteDirectory)
     {
-        if (substr($absoluteDirectory, 0, strlen($this->getRootDirectory())) != $this->getRootDirectory()) {
-            throw new Exception("Directory to make relative is not a child of root directory.");
+        if (substr($absoluteDirectory, 0, strlen($this->config["rootdir"])) != $this->config["rootdir"]) {
+            throw new Exception("Directory to make relative ({$absoluteDirectory}) is not a child of root directory.");
         }
 
-        return substr($absoluteDirectory, strlen($this->getRootDirectory()));
+        return substr($absoluteDirectory, strlen($this->config["rootdir"]));
     }
 }
