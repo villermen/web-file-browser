@@ -12,9 +12,11 @@
             <div class="current-directory">{{ currentDirectory }}</div>
         </div>
 
-        <div class="description-container">
-            <div class="description">{{ settings.description }}</div>
-        </div>
+        {% if settings.description %}
+            <div class="description-container">
+                <div class="description">{{ settings.description }}</div>
+            </div>
+        {%  endif %}
 
         <div class="list-container list-container-webpages">
             {% if webpages %}
