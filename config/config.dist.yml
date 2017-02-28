@@ -1,19 +1,19 @@
 # Copy this file to config.yml and adjust
 config:
     # The base directory of the file browser
-    rootdir: ~
+    rootdir: public/testwebroot/
     # The relative web path that points to the same location as the rootdir
     # Can be ignored if not displaying webpages
-    webroot: ~
+    webroot: /testwebroot/
     webpageIndexFiles:
         - index.html
         - index.php
     directories:
         /:
             display:
-                webpages: false
-                directories: false
-                files: false
+                webpages: true
+                directories: true
+                files: true
             blacklist:
                 webpages: []
                 directories: []
