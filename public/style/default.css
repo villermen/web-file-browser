@@ -1,1 +1,62 @@
-/* To be continued... */
+/* #333333
+ * #404040
+ * #7f7f7f
+ * #cccccc
+ * #e5e5e5
+ */
+* {
+    box-sizing: border-box;
+}
+html, body {
+    background-color: white;
+    color: #333333;
+    padding: 0;
+    margin: 0;
+}
+.current-directory-container {
+    background-color: #e5e5e5;
+    margin-bottom: 1em;
+}
+.current-directory {
+    margin: 0 auto 0 auto;
+    padding: 5px;
+    width: 80%;
+}
+.description {
+    width: 80%;
+    margin: 1em auto 1em auto;
+    padding: 5px;
+}
+.list-container {
+    width: 80%;
+    margin: 0 auto 1em auto;
+}
+.list {
+    display: table;
+    border: 1px solid #7f7f7f;
+    width: 100%;
+}
+.list-item {
+    display: table-row;
+    text-decoration: none;
+    border: 1px solid #7f7f7f;
+}
+.list-header {
+    background-color: #e5e5e5;
+    padding: 5px;
+    width: 100%;
+    border: solid #7f7f7f;
+    border-width: 1px 1px 0 1px;
+}
+.list-item > * {
+    display: table-cell;
+    border: solid #7f7f7f;
+    border-width: 0 1px 1px 0;
+    padding: 5px;
+}
+.list-item > *:last-child {
+    border-right-width: 0;
+}
+.list-item:last-child > * {
+    border-bottom-width: 0;
+}

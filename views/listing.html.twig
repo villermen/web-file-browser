@@ -7,14 +7,20 @@
     </head>
 
     <body>
-        <div class="current-directory">{{ currentDirectory }}</div>
+        {# TODO: Anchorize #}
+        <div class="current-directory-container">
+            <div class="current-directory">{{ currentDirectory }}</div>
+        </div>
 
-        <div class="description">{{ settings.description }}</div>
+        <div class="description-container">
+            <div class="description">{{ settings.description }}</div>
+        </div>
 
-        <div class="listing-container">
+        <div class="list-container list-container-webpages">
             {% if webpages %}
-                <div class="listing listing-webpages">
-                    <div class="list-header list-header-webpages">Webpages</div>
+                <div class="list-header list-header-webpages">Webpages</div>
+
+                <div class="list list-webpages">
                     {% for webpage in webpages %}
                         <a class="list-item list-item-webpage" href="{{ webpage.url }}">
                             <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
@@ -22,10 +28,13 @@
                     {% endfor %}
                 </div>
             {% endif %}
+        </div>
 
+        <div class="list-container list-container-directories">
             {% if directories %}
-                <div class="listing listing-directories">
-                    <div class="list-header list-header-directories">Directories</div>
+                <div class="list-header list-header-directories">Directories</div>
+
+                <div class="list list-directories">
                     {% for directory in directories %}
                         <a class="list-item list-item-directory" href="{{ directory.url }}">
                             <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
@@ -33,10 +42,13 @@
                     {% endfor %}
                 </div>
             {% endif %}
+        </div>
 
+        <div class="list-container list-container-files">
             {% if files %}
-                <div class="listing listing-files">
-                    <div class="list-header list-header-files">Files</div>
+                <div class="list-header list-header-files">Files</div>
+
+                <div class="list list-files">
                     {% for file in files %}
                         <a class="list-item list-file-webpage" href="{{ file.url }}">
                             <div class="list-item--name list-item-file--name">{{ file.name }}</div>
