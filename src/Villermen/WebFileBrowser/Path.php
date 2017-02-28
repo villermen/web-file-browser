@@ -79,4 +79,10 @@ class Path
 
         return $path;
     }
+
+    public static function encodeUrl(string $url) : string
+    {
+        $url = rawurlencode($url);
+        return str_replace([ "%3A%2F%2F", "%2F" ], [ "://", "/" ], $url);
+    }
 }

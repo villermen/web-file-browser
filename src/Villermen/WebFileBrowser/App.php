@@ -80,7 +80,7 @@ class App
         // Parse requested directory
         $path = urldecode($request->getPathInfo());
         $path = Path::normalizeDirectory($path);
-        $path = Path::breakEncoding($path);
+        // $path = Path::breakEncoding($path);
 
         // Prevent directory traversal
         if (strpos("/" . $path, "/../") !== false) {
@@ -232,7 +232,7 @@ class App
                             $subdirectorySettings->isDisplayFiles()) {
                             $items["directories"][] = [
                                 "name" => $filename,
-                                "url" => $this->browserBaseUrl . $this->makeRelative($path)
+                                "url" => Path::encodeUrl($this->browserBaseUrl . $this->makeRelative($path))
                             ];
                         }
                     }
@@ -243,7 +243,7 @@ class App
                             if (file_exists($path . $webpageIndexFile)) {
                                 $items["webpages"][] = [
                                     "name" => $filename,
-                                    "url" => $this->config["webroot"] . $this->makeRelative($path)
+                                    "url" => Path::encodeUrl($this->config["webroot"] . $this->makeRelative($path))
                                 ];
 
                                 break;
@@ -255,7 +255,7 @@ class App
 
                     $items["files"][] = [
                         "name" => $filename,
-                        "url" =>  $this->config["webroot"] . $this->makeRelative($path),
+                        "url" =>  Path::encodeUrl($this->config["webroot"] . $this->makeRelative($path)),
                         "size" => self::bytesize($fileInfo->getSize()),
                         "bytes" => $fileInfo->getSize()
                     ];
