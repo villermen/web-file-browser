@@ -67,7 +67,8 @@ class App
             "directories" => $items["directories"],
             "files" => $items["files"],
             "currentDirectory" => "/" . Path::fixEncoding($this->makeRelative($this->requestDirectory)),
-            "settings" => $directorySettings
+            "settings" => $directorySettings,
+            "browserBaseUrl" => $this->browserBaseUrl
         ]));
         $response->send();
     }
