@@ -62,13 +62,14 @@ class App
             "autoescape" => "html"
         ]);
 
-        $response = new Response($twig->render("listing.html.twig", [
-            "webpages" => $items["webpages"],
-            "directories" => $items["directories"],
-            "files" => $items["files"],
-            "currentDirectory" => "/" . Path::fixEncoding($this->makeRelative($this->requestDirectory)),
-            "settings" => $directorySettings,
-            "browserBaseUrl" => $this->browserBaseUrl
+        $response = new Response($twig->render("entry.html.twig", [
+            "browserBaseUrl" => $this->browserBaseUrl,
+            "data" => [
+                "webpages" => $items["webpages"],
+                "directories" => $items["directories"],
+                "files" => $items["files"],
+                "settings" => $directorySettings,
+            ],
         ]));
         $response->send();
     }
