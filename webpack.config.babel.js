@@ -1,6 +1,4 @@
 import path from 'path';
-import ProgressBarPlugin from 'progress-bar-webpack-plugin';
-import chalk from 'chalk';
 import webpackMerge from 'webpack-merge';
 
 const baseConfig = {
