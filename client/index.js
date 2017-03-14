@@ -1,7 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import { BrowserRouter } from 'react-router-dom';
+
+import App from './App';
 
 const container = document.querySelector('#app');
 
-ReactDOM.render(<App />, container);
+ReactDOM.render((
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
+), container);
