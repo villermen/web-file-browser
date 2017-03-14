@@ -1,5 +1,5 @@
 // @flow
-import React  from 'react';
+import React from 'react';
 
 type Props = {
     match: {
@@ -10,8 +10,7 @@ type Props = {
 };
 
 function Browser({ match }: Props) {
-    const { path } = match.params;
-    return <div>Path: {path}</div>;
+    return <div>Path: {match.params.path}</div>;
 }
 
 export default Browser;
