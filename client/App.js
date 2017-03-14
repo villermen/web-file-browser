@@ -1,10 +1,13 @@
+// @flow
 import React from 'react';
 import { Route } from 'react-router-dom';
+
+import Browser from './components/Browser';
 
 function App() {
     return (
         <div>
-            <Route path="/:path*" render={props => <div>Path: {console.log(props)}{props.match.params.path}</div>} />
+            <Route path="/:path*" component={Browser} />
         </div>
     );
 }

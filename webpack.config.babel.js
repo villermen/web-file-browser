@@ -18,8 +18,11 @@ export default {
                         loader: 'babel-loader',
                         options: {
                             presets: [
-                                ["es2015", { modules: false }],
-                                "react",
+                                ['es2015', { modules: false }],
+                                'react',
+                            ],
+                            plugins: [
+                                'transform-flow-strip-types',
                             ],
                         },
                     },

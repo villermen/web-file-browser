@@ -6,10 +6,15 @@
   },
   "devDependencies": {
     "babel-core": "next",
+    "babel-eslint": "^7.1.1",
     "babel-loader": "next",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-react": "^6.23.0",
+    "babel-plugin-transform-flow-strip-types": "next",
+    "babel-preset-es2015": "next",
+    "babel-preset-react": "next",
     "babel-register": "^6.23.0",
+    "eslint": "^3.17.1",
+    "eslint-plugin-flowtype": "^2.30.3",
+    "flow-bin": "^0.41.0",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
   },
