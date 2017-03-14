@@ -2,7 +2,8 @@
   "name": "web-file-browser",
   "version": "1.0.0",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "dev-server": "webpack-dev-server --hot --inline"
   },
   "devDependencies": {
     "babel-core": "next",
@@ -20,7 +21,8 @@
     "eslint-plugin-react": "^6.10.0",
     "flow-bin": "^0.41.0",
     "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.4.1"
+    "webpack-dev-server": "^2.4.1",
+    "webpack-merge": "^4.0.0"
   },
   "dependencies": {
     "react": "^15.4.2",

@@ -64,6 +64,7 @@ class App
 
         $response = new Response($twig->render("entry.html.twig", [
             "browserBaseUrl" => $this->browserBaseUrl,
+            "assetsBaseUrl" => $request->getSchemeAndHttpHost() . ':8080/assets/',
             "data" => [
                 "webpages" => $items["webpages"],
                 "directories" => $items["directories"],
