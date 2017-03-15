@@ -2,7 +2,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import Browser from './components/Browser';
+import Browser from './containers/Browser';
 
 function App() {
     return (

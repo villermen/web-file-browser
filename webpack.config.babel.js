@@ -24,6 +24,7 @@ const baseConfig = {
                             ],
                             plugins: [
                                 'transform-flow-strip-types',
+                                'transform-object-rest-spread',
                             ],
                         },
                     },
@@ -34,7 +35,7 @@ const baseConfig = {
 };
 
 const developmentConfig = {
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
 
     devServer: {
         overlay: true,
@@ -42,6 +43,10 @@ const developmentConfig = {
         host: '0.0.0.0',
         port: 8080,
         publicPath: '/assets/',
+    },
+
+    output: {
+        publicPath: 'http://localhost:8080/assets/',
     },
 };
 
