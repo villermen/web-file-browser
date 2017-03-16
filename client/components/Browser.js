@@ -1,10 +1,12 @@
 // @flow
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Category from './Category';
+
+import { Items } from '../types';
 
 type Props = {
     loading: boolean,
-    items: Array<any>,
+    items: Items,
 };
 
 function Browser({ loading, items }: Props) {
@@ -14,11 +16,9 @@ function Browser({ loading, items }: Props) {
 
     return (
         <div>
-            Items
-            <br />
-            <Link to="/asdf">/asdf</Link>
-            <br />
-            <Link to="/asdf/sdasd">/asdf/sdasd</Link>
+            <Category title="Websites" items={items.websites} />
+            <Category title="Directories" items={items.directories} />
+            <Category title="Files" items={items.files} />
         </div>
     );
 }
