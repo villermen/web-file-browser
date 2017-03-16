@@ -19,7 +19,6 @@ function mapStateToProps({ items }) {
 }
 
 function mapDispatchToProps(dispatch, props: Props) {
-    console.log('loadItemsIfNeeded');
     dispatch(loadItemsIfNeeded(props.match.params.path || ''));
 
     return {};

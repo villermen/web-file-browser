@@ -14,8 +14,6 @@ export function shouldLoadItems({ items: state }, path) {
 
 export function loadItemsIfNeeded(path) {
     return (dispatch, getState) => {
-        console.log(shouldLoadItems(getState(), path), getState());
-
         if (shouldLoadItems(getState(), path)) {
             return dispatch(loadItems(path));
         }

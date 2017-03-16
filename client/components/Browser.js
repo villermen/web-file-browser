@@ -12,8 +12,6 @@ function Browser({ loading, items }: Props) {
         return <div>Loading...</div>;
     }
 
-    console.log(items, 'aa');
-
     return (
         <div>
             Items
