@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import Category from './Category';
+import Category from './Category/Category';
 
 import { Items } from '../types';
 

@@ -34,8 +34,10 @@ const baseConfig = {
     },
 };
 
+const devtool = 'source-map';
+
 const developmentConfig = {
-    devtool: 'source-map',
+    devtool,
 
     devServer: {
         overlay: true,
@@ -47,6 +49,33 @@ const developmentConfig = {
 
     output: {
         publicPath: 'http://localhost:8080/assets/',
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: 'style-loader',
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: devtool !== false,
+                            modules: true,
+                            localIdentName: '[name]__[local]--[hash:base64:5]',
+                        },
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: devtool !== false,
+                        },
+                    },
+                ],
+            },
+        ],
     },
 };
 
