@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:flowtype/recommended"
+  ],
+  "plugins": [
+    "flowtype"
+  ],
+  "rules": {
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "arrow-parens": ["off"],
+
+    "react/jsx-indent": ["error", 4],
+    "react/jsx-filename-extension": ["error", { "extensions": [".js"] }],
+    "react/no-unused-prop-types": ["warn", { "skipShapeProps": true }]
+  }
+}

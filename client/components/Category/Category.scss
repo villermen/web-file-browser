@@ -1,0 +1,35 @@
+@import '../../styles/variables';
+
+.category {
+    display: flex;
+    flex-direction: column;
+
+    margin: ($spacing-base * 6) 0;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    margin: 0 0 ($spacing-base * 2);
+}
+
+.title {
+    margin: 0;
+
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: $color-text-primary;
+}
+
+.details {
+    margin-left: $spacing-base;
+
+    font-weight: 400;
+    font-size: 1rem;
+    color: $color-text-secondary;
+}
+
+.items {
+    margin: 0;
+}

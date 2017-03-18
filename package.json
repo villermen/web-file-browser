@@ -1,0 +1,43 @@
+{
+  "name": "web-file-browser",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack",
+    "dev-server": "webpack-dev-server --hot --inline"
+  },
+  "devDependencies": {
+    "babel-core": "next",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "next",
+    "babel-plugin-transform-flow-strip-types": "next",
+    "babel-preset-es2015": "next",
+    "babel-preset-react": "next",
+    "babel-register": "^6.23.0",
+    "css-loader": "^0.27.3",
+    "eslint": "^3.17.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-flowtype": "^2.30.3",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0",
+    "flow-bin": "^0.41.0",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.14.1",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1",
+    "webpack-merge": "^4.0.0"
+  },
+  "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "next",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.3",
+    "react-router-dom": "^4.0.0-beta.6",
+    "redux": "^3.6.0",
+    "redux-actions": "^2.0.1",
+    "redux-promise-middleware": "^4.2.0",
+    "redux-thunk": "^2.2.0",
+    "type-to-reducer": "^1.0.3"
+  }
+}
