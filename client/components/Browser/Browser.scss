@@ -1,0 +1,7 @@
+@import '../../styles/variables';
+
+.wrapper {
+    margin: 0 auto;
+    padding: 0 ($spacing-base * 2);
+    max-width: $max-width + $spacing-base * 4;
+}

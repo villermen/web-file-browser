@@ -1,6 +1,6 @@
 // @flow
 import { connect } from 'react-redux';
-import Browser from '../components/Browser';
+import Browser from '../components/Browser/Browser';
 import { loadItemsIfNeeded } from '../actions/items';
 
 type Props = {

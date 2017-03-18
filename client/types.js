@@ -3,8 +3,10 @@ export type Item = {
     label: string,
 };
 
-export type Items = {
+export type Categories = {
     websites: Array<Item>,
     directories: Array<Item>,
     files: Array<Item>,
 };
+
+export type ViewType = 'list' | 'grid';

@@ -1,12 +1,13 @@
 // @flow
 import React from 'react';
-import Category from './Category/Category';
+import Category from '../Category/Category';
 
-import { Items } from '../types';
+import { Categories } from '../../types';
+import styles from './Browser.scss';
 
 type Props = {
     loading: boolean,
-    items: Items,
+    items: Categories,
 };
 
 function Browser({ loading, items }: Props) {
@@ -15,7 +16,7 @@ function Browser({ loading, items }: Props) {
     }
 
     return (
-        <div>
+        <div className={styles.wrapper}>
             <Category title="Websites" items={items.websites} />
             <Category title="Directories" items={items.directories} />
             <Category title="Files" items={items.files} />

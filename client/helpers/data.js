@@ -1,7 +1,7 @@
 // @flow
-import { Items } from '../types';
+import { Categories } from '../types';
 
-export function fetchItems(path: string): Promise<Items> {
+export function fetchItems(path: string): Promise<Categories> {
     return Promise.resolve()
         .then(() => {
             switch (path) {
