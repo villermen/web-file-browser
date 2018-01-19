@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Yaml\Yaml;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
+use Villermen\DataHandling\DataHandling;
 
 // TODO: Move listing specific code to Listing.php
 class App
@@ -66,7 +67,7 @@ class App
             "webpages" => $items["webpages"],
             "directories" => $items["directories"],
             "files" => $items["files"],
-            "currentDirectory" => "/" . Path::fixEncoding($this->makeRelative($this->requestDirectory)),
+            "currentDirectory" => "/" . $this->makeRelative($this->requestDirectory),
             "settings" => $directorySettings,
             "browserBaseUrl" => $this->browserBaseUrl
         ]));
@@ -76,11 +77,11 @@ class App
     protected function resolvePaths(Request $request)
     {
         // Set base path for generating browser URLs
-        $this->browserBaseUrl = Path::normalizeDirectory($request->getSchemeAndHttpHost() . $request->getBasePath());
+        $this->browserBaseUrl = DataHandling::formatDirectory($request->getSchemeAndHttpHost(), $request->getBasePath());
 
         // Parse requested directory
         $path = urldecode($request->getPathInfo());
-        $path = Path::normalizeDirectory($path);
+        $path = DataHandling::formatDirectory($path);
         // $path = Path::breakEncoding($path);
 
         // Prevent directory traversal
@@ -90,7 +91,7 @@ class App
 
         // Resolve to absolute directory
         try {
-            $this->requestDirectory = Path::normalizeDirectory($this->config["rootdir"] . $path, true);
+            $this->requestDirectory = DataHandling::formatAndResolveDirectory($this->config["rootdir"] . $path);
 
             if (!is_dir($this->requestDirectory)) {
                 throw new Exception("Requested directory is not actually a directory.");
@@ -120,7 +121,7 @@ class App
         $configDirectoryTree = [];
         $requestPathParts = explode("/", $path);
         for ($i = 1; $i < count($requestPathParts); $i++) {
-            $configDirectoryTree[] = Path::normalizeDirectory(implode("/", array_slice($requestPathParts, 0, $i)));
+            $configDirectoryTree[] = DataHandling::formatDirectory(implode("/", array_slice($requestPathParts, 0, $i)));
         }
 
         $configDirectoryTree = array_unique($configDirectoryTree);
@@ -194,7 +195,7 @@ class App
 
                     // Description is only ever applicable to the requested directory
                     if ($configDirectory == $lastConfigDirectory) {
-                        if ($directoryConfig["description"]) {
+                        if (isset($directoryConfig["description"])) {
                             $settings->setDescription((string)$directoryConfig["description"]);
                         }
                     }
@@ -218,12 +219,12 @@ class App
         $directoryIterator = new DirectoryIterator($this->requestDirectory);
 
         foreach($directoryIterator as $fileInfo) {
-            $filename = Path::fixEncoding($fileInfo->getFilename());
+            $filename = $fileInfo->getFilename();
 
             // Make sure the entry is showable
             if ($fileInfo->isReadable() && $filename[0] != ".") {
                 if ($fileInfo->isDir()) {
-                    $path = Path::normalizeDirectory($fileInfo->getPathname());
+                    $path = DataHandling::formatDirectory($fileInfo->getPathname());
 
                     if ($directorySettings->isDisplayDirectories()) {
                         // Directories need to be accessible by this browser
@@ -252,7 +253,7 @@ class App
                         }
                     }
                 } elseif ($directorySettings->isDisplayFiles() && $fileInfo->isFile()) {
-                    $path = Path::normalizeFile($fileInfo->getPathname());
+                    $path = DataHandling::formatPath($fileInfo->getPathname());
 
                     $items["files"][] = [
                         "name" => $filename,
@@ -277,21 +278,20 @@ class App
 
         // Parse and verify rootdir
         try {
-            $config["rootdir"] = Path::normalizeDirectory(Path::breakEncoding($config["rootdir"]), true);
+            $config["rootdir"] = DataHandling::formatAndResolveDirectory($config["rootdir"]);
         } catch (Exception $ex) {
             throw new Exception("rootdir config option does not point to a valid directory.", 0, $ex);
         }
 
         // Parse webroot
-        $webroot = $request->getSchemeAndHttpHost() . Path::breakEncoding($config["webroot"]);
-        $config["webroot"] = Path::normalizeDirectory($webroot);
+        $webroot = $request->getSchemeAndHttpHost() . $config["webroot"];
+        $config["webroot"] = DataHandling::formatDirectory($webroot);
 
         // Normalize directories
         $parsedDirectorySettings = [];
         foreach($config["directories"] as $directory => $directorySettings) {
-            $directory = Path::breakEncoding($directory);
             $directory = $config["rootdir"] . ltrim($directory, "/");
-            $directory = Path::normalizeDirectory($directory);
+            $directory = DataHandling::formatDirectory($directory);
             $parsedDirectorySettings[$directory] = $directorySettings;
         }
         $config["directories"] = $parsedDirectorySettings;

@@ -6,7 +6,8 @@
         "symfony/yaml": "^3.2",
         "symfony/http-foundation": "^3.2",
         "php": ">=7.0",
-        "twig/twig": "^2.1"
+        "twig/twig": "^2.1",
+        "villermen/data-handling": "^1.10"
     },
     "license": "MIT",
     "authors": [
