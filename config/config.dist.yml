@@ -1,8 +1,8 @@
 # Copy this file to config.yml and adjust
 config:
     # The base directory of the file browser
-    rootdir: public/testwebroot/
-    # The relative web path that points to the same location as the rootdir
+    root: public/testwebroot/
+    # The relative web path that points to the same directory as root
     # Can be ignored if not displaying webpages
     webroot: /testwebroot/
     webpageIndexFiles:
