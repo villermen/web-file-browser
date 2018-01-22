@@ -5,7 +5,8 @@ config:
     # The relative web path that points to the same directory as root
     # Can be ignored if not displaying webpages
     webroot: /testwebroot/
-    webpageIndexFiles:
+    # A webpage directory must have at least one of these files present in order to be shown
+    indexFiles:
         - index.html
         - index.php
     directories:

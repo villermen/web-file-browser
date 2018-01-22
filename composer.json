@@ -7,7 +7,7 @@
         "symfony/http-foundation": "^3.2",
         "php": ">=7.0",
         "twig/twig": "^2.1",
-        "villermen/data-handling": "^1.10"
+        "villermen/data-handling": "^1.14"
     },
     "license": "MIT",
     "authors": [

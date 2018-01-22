@@ -3,27 +3,27 @@
     <head>
         <meta charset="utf-8" />
         <title>Viller's web file browser</title>
-        <link rel="stylesheet" href="{{ browserBaseUrl ~ "style/default.css" }}" />
+        <link rel="stylesheet" href="{{ configuration.getRelativeUrl("style/default.css") }}" />
     </head>
 
     <body>
         {# TODO: Anchorize #}
         <div class="current-directory-container">
-            <div class="current-directory">{{ currentDirectory }}</div>
+            <div class="current-directory">{{ configuration.getRelativePath(directory.path) }}</div>
         </div>
 
-        {% if settings.description %}
+        {% if directory.description %}
             <div class="description-container">
-                <div class="description">{{ settings.description }}</div>
+                <div class="description">{{ directory.description }}</div>
             </div>
         {%  endif %}
 
         <div class="list-container list-container-webpages">
-            {% if webpages %}
+            {% if directory.webpages %}
                 <div class="list-header list-header-webpages">Webpages</div>
 
                 <div class="list list-webpages">
-                    {% for webpage in webpages %}
+                    {% for webpage in directory.webpages %}
                         <a class="list-item list-item-webpage" href="{{ webpage.url }}">
                             <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
                         </a>
@@ -33,11 +33,11 @@
         </div>
 
         <div class="list-container list-container-directories">
-            {% if directories %}
+            {% if directory.directories %}
                 <div class="list-header list-header-directories">Directories</div>
 
                 <div class="list list-directories">
-                    {% for directory in directories %}
+                    {% for directory in directory.directories %}
                         <a class="list-item list-item-directory" href="{{ directory.url }}">
                             <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
                         </a>
@@ -47,11 +47,11 @@
         </div>
 
         <div class="list-container list-container-files">
-            {% if files %}
+            {% if directory.files %}
                 <div class="list-header list-header-files">Files</div>
 
                 <div class="list list-files">
-                    {% for file in files %}
+                    {% for file in directory.files %}
                         <a class="list-item list-file-webpage" href="{{ file.url }}">
                             <div class="list-item--name list-item-file--name">{{ file.name }}</div>
                             <div class="list-item--name list-item-file--size">{{ file.size }}</div>

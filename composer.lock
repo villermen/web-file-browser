@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8ee5755bda571970a12acd151909d4b",
+    "content-hash": "8f8dc3bac4a433f135f38d96b40f552d",
     "packages": [
         {
             "name": "paragonie/random_compat",
@@ -352,16 +352,16 @@
         },
         {
             "name": "villermen/data-handling",
-            "version": "v1.10.1",
+            "version": "v1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/villermen/data-handling.git",
-                "reference": "3354fd175674a5b04d56c6cf73f18fe0123590ef"
+                "reference": "383a9eadaf958a0d1bc0840557ec25495e4cd86d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/villermen/data-handling/zipball/3354fd175674a5b04d56c6cf73f18fe0123590ef",
-                "reference": "3354fd175674a5b04d56c6cf73f18fe0123590ef",
+                "url": "https://api.github.com/repos/villermen/data-handling/zipball/383a9eadaf958a0d1bc0840557ec25495e4cd86d",
+                "reference": "383a9eadaf958a0d1bc0840557ec25495e4cd86d",
                 "shasum": ""
             },
             "require": {
@@ -381,7 +381,7 @@
                 "MIT"
             ],
             "description": "Library for general data sanitization and validation.",
-            "time": "2018-01-19T22:28:44+00:00"
+            "time": "2018-01-22T21:15:27+00:00"
         }
     ],
     "packages-dev": [
