@@ -259,4 +259,9 @@ class Directory
     {
         return $this->path;
     }
+
+    public function isEmpty(): bool
+    {
+        return count($this->getWebpages()) + count($this->getDirectories()) + count($this->getFiles()) == 0;
+    }
 }

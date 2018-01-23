@@ -250,8 +250,21 @@ class Configuration
      */
     public function getRelativePath(string $path): string
     {
-        return DataHandling::formatPath("/", DataHandling::makePathRelative($path, $this->getRoot()));
+        return DataHandling::formatPath(DataHandling::makePathRelative($path, $this->getRoot()));
     }
 
+    /**
+     * Returns the name of the theme to use for styling.
+     *
+     * @return string
+     */
+    public function getTheme(): string
+    {
+        return $this->resolvedConfiguration["theme"] ?? "dark";
+    }
 
+    public function getTitle(): string
+    {
+        return $this->resolvedConfiguration["title"] ?? "Viller's web file browser";
+    }
 }

@@ -5,6 +5,9 @@ config:
     # The relative web path that points to the same directory as root
     # Can be ignored if not displaying webpages
     webroot: /testwebroot/
+    # Name of the stylesheet to use
+    theme: dark
+    title: "Viller's web file browser"
     # A webpage directory must have at least one of these files present in order to be shown
     indexFiles:
         - index.html
