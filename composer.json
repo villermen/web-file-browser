@@ -9,6 +9,11 @@
         "twig/twig": "^2.1",
         "villermen/data-handling": "^1.14"
     },
+    "config": {
+        "platform": {
+            "php": "7.0"
+        }
+    },
     "license": "MIT",
     "authors": [
         {

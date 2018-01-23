@@ -128,7 +128,7 @@ class Directory
     /**
      * Scans the directory
      */
-    private function fetchEntries(): void
+    private function fetchEntries()
     {
         if ($this->webpages !== null) {
             return;
