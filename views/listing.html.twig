@@ -1,88 +1,79 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>{{ path }} - {{ configuration.title }}</title>
-        <link rel="stylesheet" href="{{ configuration.getRelativeUrl("style/" ~ configuration.theme ~ ".css") }}" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-        <link rel="shorcut icon" href="{{ configuration.getRelativeUrl("favicon.ico") }}" />
-    </head>
+{% extends "base.html.twig" %}
 
-    <body>
-        <header class="header">
-            <nav class="current-directory">
-                {% for pathPart in pathParts %}
-                    {% if loop.first %}
-                        {% set name %}<i class="material-icons">home</i>{% endset %}
-                    {% else %}
-                        {% set name = pathPart.name %}
-                        <span class="current-directory-separator">/</span>
-                    {% endif %}
+{% block title %}{{ path }}{% endblock %}
 
-                    {% if pathPart.href is not empty %}
-                        <a class="current-directory-part" href="{{ pathPart.href }}">{{ name }}</a>
-                    {% else %}
-                        <span class="current-directory-part">{{ name }}</span>
-                    {% endif %}
+{% block header %}
+    <nav class="current-directory">
+        {% for pathPart in pathParts %}
+            {% if loop.first %}
+                {% set name %}<i class="material-icons">home</i>{% endset %}
+            {% else %}
+                {% set name = pathPart.name %}
+                <span class="current-directory-separator">/</span>
+            {% endif %}
+
+            {% if pathPart.href is not empty %}
+                <a class="current-directory-part" href="{{ pathPart.href }}">{{ name }}</a>
+            {% else %}
+                <span class="current-directory-part">{{ name }}</span>
+            {% endif %}
+        {% endfor %}
+    </nav>
+{% endblock %}
+
+{% block content %}
+    {% if directory.description %}
+        <section class="content-text description">
+            {{ directory.description }}
+        </section>
+    {%  endif %}
+
+    {% if directory.empty %}
+        <section class="content-alert empty-directory-message">
+            There are no items to display.
+        </section>
+    {% endif %}
+
+    {% if directory.webpages %}
+        <section class="list-container list-container-webpages">
+            <div class="list-header list-header-webpages">Webpages</div>
+
+            <div class="list list-webpages">
+                {% for webpage in directory.webpages %}
+                    <a class="list-item list-item-webpage" href="{{ webpage.url }}">
+                        <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
+                    </a>
                 {% endfor %}
-            </nav>
-        </header>
+            </div>
+        </section>
+    {% endif %}
 
-        <div class="content">
-            {% if directory.description %}
-                <section class="description">
-                    {{ directory.description }}
-                </section>
-            {%  endif %}
+    {% if directory.directories %}
+        <section class="list-container list-container-directories">
+            <div class="list-header list-header-directories">Directories</div>
 
-            {% if directory.empty %}
-                <section class="empty-directory-message">
-                    There are no items to display.
-                </section>
-            {% endif %}
+            <div class="list list-directories">
+                {% for directory in directory.directories %}
+                    <a class="list-item list-item-directory" href="{{ directory.url }}">
+                        <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
 
-            {% if directory.webpages %}
-                <section class="list-container list-container-webpages">
-                    <div class="list-header list-header-webpages">Webpages</div>
+    {% if directory.files %}
+        <section class="list-container list-container-files">
+            <div class="list-header list-header-files">Files</div>
 
-                    <div class="list list-webpages">
-                        {% for webpage in directory.webpages %}
-                            <a class="list-item list-item-webpage" href="{{ webpage.url }}">
-                                <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endif %}
-
-            {% if directory.directories %}
-                <section class="list-container list-container-directories">
-                    <div class="list-header list-header-directories">Directories</div>
-
-                    <div class="list list-directories">
-                        {% for directory in directory.directories %}
-                            <a class="list-item list-item-directory" href="{{ directory.url }}">
-                                <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endif %}
-
-            {% if directory.files %}
-                <section class="list-container list-container-files">
-                    <div class="list-header list-header-files">Files</div>
-
-                    <div class="list list-files">
-                        {% for file in directory.files %}
-                            <a class="list-item list-file-webpage" href="{{ file.url }}">
-                                <div class="list-item--name list-item-file--name">{{ file.name }}</div>
-                                <div class="list-item--name list-item-file--size">{{ file.size }}</div>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endif %}
-        </div>
-    </body>
-</html>
+            <div class="list list-files">
+                {% for file in directory.files %}
+                    <a class="list-item list-file-webpage" href="{{ file.url }}">
+                        <div class="list-item--name list-item-file--name">{{ file.name }}</div>
+                        <div class="list-item--name list-item-file--size">{{ file.size }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

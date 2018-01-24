@@ -29,12 +29,12 @@ a {
 a:hover {
     color: rgba(255, 255, 255, 0.7);
 }
-.header {
+.header-container {
     margin-bottom: 1rem;
     padding: 1rem 0;
     background-color: #1f1f1f;
 }
-.current-directory {
+.header {
     margin: 0 auto 0 auto;
     width: 80%;
     font-weight: bold;
@@ -47,9 +47,16 @@ a:hover {
     margin: 0 auto;
     width: 80%;
 }
-.description {
+.content-text{
     margin-bottom: 1rem;
     padding: 0.2rem;
+}
+.content-alert {
+    background-color: #1f1f1f;
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 .list-container {
     margin-bottom: 1rem;
@@ -86,10 +93,4 @@ a:hover {
 }
 .list-item:last-child > * {
     border-bottom-width: 0;
-}
-.empty-directory-message {
-    background-color: #1f1f1f;
-    padding: 0.5rem 1rem;
-    border-radius: 3px;
-    text-align: center;
 }
