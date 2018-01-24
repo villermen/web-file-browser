@@ -1,22 +1,23 @@
 # Copy this file to config.yml and adjust
 config:
-    # The base directory of the file browser, can be a path relative to the project or an absolute path
-    root: public/
+    # The base directory for the browser to browse. Can be a path relative to the project, or an absolute path
+    root: ""
     # The relative web path that points to the same directory as root
     webroot: /
     # Name of the stylesheet to use
     theme: dark
-    title: "Viller's web file browser"
+    title: Viller's web file browser
     # A webpage directory must have at least one of these files present in order to be shown
     indexFiles:
         - index.html
         - index.php
     directories:
+        # This is the default configuration for all directories, only non-default options have to be added
         /:
             display:
-                webpages: true
-                directories: true
-                files: true
+                webpages: false
+                directories: false
+                files: false
             blacklist:
                 webpages: []
                 directories: []
@@ -26,5 +27,6 @@ config:
                 webpages: []
                 directories: []
                 files: []
-            recursive: true
+                all: []
+            recursive: false
             description: ""
