@@ -175,41 +175,30 @@ class Directory
 
     private function passesWebpageFilter($filename): bool
     {
-        if (DataHandling::matchesFilterInsensitive($filename, $this->webpageWhitelist)) {
-            return true;
+        // Whitelist is only used if it is not empty, and overrules the blacklist
+        if (count($this->webpageWhitelist)) {
+            return DataHandling::matchesFilterInsensitive($filename, $this->webpageWhitelist);
         }
 
-        if (DataHandling::matchesFilterInsensitive($filename, $this->webpageBlacklist)) {
-            return false;
-        }
-
-        return true;
+        return !DataHandling::matchesFilterInsensitive($filename, $this->webpageBlacklist);
     }
 
     private function passesDirectoryFilter($filename): bool
     {
-        if (DataHandling::matchesFilterInsensitive($filename, $this->directoryWhitelist)) {
-            return true;
+        if (count($this->directoryWhitelist)) {
+            return DataHandling::matchesFilterInsensitive($filename, $this->directoryWhitelist);
         }
 
-        if (DataHandling::matchesFilterInsensitive($filename, $this->directoryBlacklist)) {
-            return false;
-        }
-
-        return true;
+        return !DataHandling::matchesFilterInsensitive($filename, $this->directoryBlacklist);
     }
 
     private function passesFileFilter($filename): bool
     {
-        if (DataHandling::matchesFilterInsensitive($filename, $this->fileWhitelist)) {
-            return true;
+        if (count($this->fileWhitelist)) {
+            return DataHandling::matchesFilterInsensitive($filename, $this->fileWhitelist);
         }
 
-        if (DataHandling::matchesFilterInsensitive($filename, $this->fileBlacklist)) {
-            return false;
-        }
-
-        return true;
+        return !DataHandling::matchesFilterInsensitive($filename, $this->fileBlacklist);
     }
 
     /**

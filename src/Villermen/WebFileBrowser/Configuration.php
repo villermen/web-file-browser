@@ -67,8 +67,6 @@ class Configuration
      */
     public function getDirectory(string $directory): Directory
     {
-        // TODO: Global black- and whitelists?
-
         $directory = DataHandling::formatAndResolveDirectory($directory);
 
         if (isset($this->cachedDirectories[$directory])) {
