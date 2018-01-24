@@ -93,6 +93,7 @@ a:hover {
 }
 .list-item-file--size, .list-item-file--modified {
     white-space: nowrap;
+    text-align: right;
 }
 .list-item > *:last-child {
     border-right-width: 0;
