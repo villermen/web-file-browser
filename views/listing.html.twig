@@ -1,0 +1,80 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ path }}{% endblock %}
+
+{% block header %}
+    <nav class="current-directory">
+        {% for pathPart in pathParts %}
+            {% if loop.first %}
+                {% set name %}<i class="material-icons">home</i>{% endset %}
+            {% else %}
+                {% set name = pathPart.name %}
+                <span class="current-directory-separator">/</span>
+            {% endif %}
+
+            {% if pathPart.href is not empty %}
+                <a class="current-directory-part" href="{{ pathPart.href }}">{{ name }}</a>
+            {% else %}
+                <span class="current-directory-part">{{ name }}</span>
+            {% endif %}
+        {% endfor %}
+    </nav>
+{% endblock %}
+
+{% block content %}
+    {% if directory.description %}
+        <section class="content-text description">
+            {{ directory.description }}
+        </section>
+    {%  endif %}
+
+    {% if directory.empty %}
+        <section class="content-alert empty-directory-message">
+            There are no items to display.
+        </section>
+    {% endif %}
+
+    {% if directory.webpages %}
+        <section class="list-container list-container-webpages">
+            <div class="list-header list-header-webpages">Webpages</div>
+
+            <div class="list list-webpages">
+                {% for webpage in directory.webpages %}
+                    <a class="list-item list-item-webpage" href="{{ configuration.getUrl(webpage.path) }}">
+                        <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if directory.directories %}
+        <section class="list-container list-container-directories">
+            <div class="list-header list-header-directories">Directories</div>
+
+            <div class="list list-directories">
+                {% for directory in directory.directories %}
+                    <a class="list-item list-item-directory" href="{{ configuration.getBrowserUrl(directory.path) }}">
+                        <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if directory.files %}
+        <section class="list-container list-container-files">
+            <div class="list-header list-header-files">Files</div>
+
+            <div class="list list-files">
+                {% for file in directory.files %}
+                    <a class="list-item list-item-file" href="{{ configuration.getUrl(file.path) }}">
+                        <div class="list-item--name list-item-file--name">{{ file.name }}</div>
+                        <div class="list-item--name list-item-file--size">{{ file.size }}</div>
+                        <div class="list-item--name list-item-file--modified">{{ file.modified.format("d-m-Y") }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

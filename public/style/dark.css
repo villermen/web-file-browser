@@ -1,0 +1,103 @@
+/* #333333
+ * #404040
+ * #7f7f7f
+ * #cccccc
+ * #e5e5e5
+ */
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,700');
+
+/* Fixes material icons not being vertically aligned with text */
+.material-icons {
+    vertical-align: middle;
+    padding-bottom: 4px;
+}
+
+* {
+    box-sizing: border-box;
+}
+html, body {
+    background-color: #2b2b2b;
+    padding: 0;
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+}
+a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.9);
+}
+a:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+.header-container {
+    margin-bottom: 1rem;
+    padding: 1rem 0;
+    background-color: #1f1f1f;
+}
+.header {
+    margin: 0 auto 0 auto;
+    width: 80%;
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+.current-directory-separator {
+    color: rgba(255, 255, 255, 0.2);
+}
+.content {
+    margin: 0 auto;
+    width: 80%;
+}
+.content-text{
+    margin-bottom: 1rem;
+    padding: 0.2rem;
+}
+.content-alert {
+    background-color: #1f1f1f;
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.list-container {
+    margin-bottom: 1rem;
+    background-color: #444444;
+    border-radius: 3px;
+}
+.list {
+    display: table;
+    width: 100%;
+}
+.list-item {
+    display: table-row;
+    text-decoration: none;
+}
+.list-header {
+    background-color: #1f1f1f;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    font-weight: bold;
+    border-radius: 3px 3px 0 0;
+}
+.list-item:hover {
+    background-color: #777777;
+    color: rgba(255, 255, 255, 0.9);
+}
+.list-item > * {
+    display: table-cell;
+    border: solid #1f1f1f;
+    border-width: 0 1px 1px 0;
+    padding: 0.5rem 1rem;
+}
+.list-item-file--name {
+    width: 100%
+}
+.list-item-file--size, .list-item-file--modified {
+    white-space: nowrap;
+    text-align: right;
+}
+.list-item > *:last-child {
+    border-right-width: 0;
+}
+.list-item:last-child > * {
+    border-bottom-width: 0;
+}

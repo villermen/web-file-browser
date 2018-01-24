@@ -1,0 +1,43 @@
+# Copy this file to config.yml and adjust
+config:
+    # The base directory for the browser to browse. Can be a path relative to the project, or an absolute path
+    root: ""
+    # The relative web path that points to the same directory as root
+    webroot: /
+    # Name of the stylesheet to use
+    theme: dark
+    title: Viller's web file browser
+    # A webpage directory must have at least one of these files present in order to be shown
+    indexFiles:
+        - index.html
+        - index.php
+    # Global blacklists and whitelists that will be used for every directory
+    blacklist:
+        webpages: []
+        directories: []
+        files: []
+        all: []
+    whitelist:
+        webpages: []
+        directories: []
+        files: []
+        all: []
+    directories:
+        # This is the default configuration for all directories, only non-default options have to be added
+        /:
+            display:
+                webpages: false
+                directories: false
+                files: false
+            blacklist:
+                webpages: []
+                directories: []
+                files: []
+                all: []
+            whitelist:
+                webpages: []
+                directories: []
+                files: []
+                all: []
+            recursive: false
+            description: ""
