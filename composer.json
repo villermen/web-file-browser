@@ -29,7 +29,6 @@
         "symfony/var-dumper": "^3.2"
     },
     "scripts": {
-        "post-create-project-cmd": "Villermen\\WebFileBrowser\\ComposerScripts::postCreateProject",
         "post-install-cmd": "Villermen\\WebFileBrowser\\ComposerScripts::postInstall"
     }
 }

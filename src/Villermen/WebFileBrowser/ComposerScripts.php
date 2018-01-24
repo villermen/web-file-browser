@@ -6,11 +6,6 @@ use Composer\Script\Event;
 
 class ComposerScripts
 {
-    public static function postCreateProject(Event $event)
-    {
-        self::copyDefaultConfiguration($event);
-    }
-
     public static function postInstall(Event $event)
     {
         self::copyDefaultConfiguration($event);
