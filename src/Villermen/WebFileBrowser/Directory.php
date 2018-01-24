@@ -126,14 +126,14 @@ class Directory
     }
 
     /**
-     * Scans the directory
+     * Scans the directory and populates the entry fields if not already done.
      */
     private function fetchEntries()
     {
         if ($this->webpages !== null) {
             return;
         }
-
+        
         $this->webpages = [];
         $this->directories = [];
         $this->files = [];
@@ -141,7 +141,7 @@ class Directory
         foreach(new DirectoryIterator($this->path) as $fileInfo) {
             $filename = $fileInfo->getFilename();
 
-            // Make sure the entry is presentable
+            // Make sure the entry is presentable (readable and not hidden)
             if ($fileInfo->isReadable() && $filename[0] != ".") {
                 if ($fileInfo->isDir()) {
                     $path = DataHandling::formatDirectory($fileInfo->getPathname());
@@ -150,7 +150,7 @@ class Directory
                         // Webpages need to have an index file present
                         foreach($this->configuration->getIndexFiles() as $indexFile) {
                             if (file_exists(DataHandling::mergePaths($path, $indexFile))) {
-                                $this->webpages[] = new WebpageEntry($filename, $this->configuration->getUrl($path));
+                                $this->webpages[] = new WebpageEntry($filename, $path);
 
                                 break;
                             }
@@ -160,17 +160,27 @@ class Directory
                     if ($this->canDisplayDirectories() && $this->passesDirectoryFilter($filename)) {
                         // Directories need to be accessible by this browser
                         if ($this->configuration->isDirectoryAccessible($path)) {
-                            $this->directories[] = new DirectoryEntry($filename, $this->configuration->getBrowserUrl($path));
+                            $this->directories[] = new DirectoryEntry($filename, $path);
                         }
                     }
                 } elseif ($this->canDisplayFiles() && $fileInfo->isFile() && $this->passesFileFilter($filename)) {
                     $path = DataHandling::formatPath($fileInfo->getPathname());
 
-                    $this->files[] = new FileEntry($filename, $this->configuration->getUrl($path),
-                        DataHandling::formatBytesize($fileInfo->getSize()), $fileInfo->getSize());
+                    $this->files[] = new FileEntry(
+                        $filename, $path, DataHandling::formatBytesize($fileInfo->getSize()), $fileInfo->getSize()
+                    );
                 }
             }
         }
+
+        // Sort entries
+        $sortFunction = function(Entry $entry1, Entry $entry2) {
+            return strnatcmp($entry1->getName(), $entry2->getName());
+        };
+
+        usort($this->webpages, $sortFunction);
+        usort($this->directories, $sortFunction);
+        usort($this->files, $sortFunction);
     }
 
     private function passesWebpageFilter($filename): bool

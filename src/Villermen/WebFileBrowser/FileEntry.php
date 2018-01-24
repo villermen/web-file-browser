@@ -2,18 +2,8 @@
 
 namespace Villermen\WebFileBrowser;
 
-class FileEntry
+class FileEntry extends Entry
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
     /**
      * @var string
      */
@@ -24,34 +14,12 @@ class FileEntry
      */
     protected $bytes;
 
-    /**
-     * @param string $name
-     * @param string $url
-     * @param string $size
-     * @param int $bytes
-     */
-    public function __construct(string $name, string $url, string $size, int $bytes)
+    public function __construct(string $name, string $path, string $size, int $bytes)
     {
-        $this->name = $name;
-        $this->url = $url;
+        parent::__construct($name, $path);
+
         $this->size = $size;
         $this->bytes = $bytes;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrl(): string
-    {
-        return $this->url;
     }
 
     /**
