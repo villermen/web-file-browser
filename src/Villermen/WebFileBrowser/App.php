@@ -66,6 +66,7 @@ class App
             ])))->send();
         }
 
+        // TODO: This could be made to look fancier...
         return (new Response("404 Not Found", 404))->send();
     }
 
