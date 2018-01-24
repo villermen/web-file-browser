@@ -56,10 +56,13 @@ class App
         if ($accessible) {
             $directory = $configuration->getDirectory($requestedDirectory);
 
+            $path = "/" . rtrim($configuration->getRelativePath($directory->getPath()), "/");
+
             return (new Response($this->getTwig()->render("listing.html.twig", [
                 "configuration" => $configuration,
                 "directory" => $directory,
-                "pathParts" => $this->getPathParts($configuration, $directory)
+                "pathParts" => $this->getPathParts($path, $configuration, $directory),
+                "path" => $path
             ])))->send();
         }
 
@@ -81,16 +84,13 @@ class App
         return $this->twig;
     }
 
-    private function getPathParts(Configuration $configuration, Directory $directory): array
+    private function getPathParts(string $path, Configuration $configuration, Directory $directory): array
     {
         // Construct path parts for navigation
-        $relativePathParts = explode("/", $configuration->getRelativePath($directory->getPath()));
-
-        // Add root
-        $relativePathParts = array_merge(["/"], $relativePathParts);
+        $relativePathParts = explode("/", $path);
 
         $pathParts = [];
-        for($i = 0; $i < count($relativePathParts) - 1; $i++) {
+        for($i = 0; $i < count($relativePathParts); $i++) {
             $absolutePath = DataHandling::formatDirectory($configuration->getRoot(), ...array_slice($relativePathParts, 0, $i + 1));
 
             // Add an href only if possible

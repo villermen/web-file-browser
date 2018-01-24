@@ -1,10 +1,10 @@
 # Copy this file to config.yml and adjust
 config:
-    # The base directory of the file browser
-    root: public/testwebroot/
+    # The base directory of the file browser, can be a path relative to the project or an absolute path
+    root: public/
     # The relative web path that points to the same directory as root
     # Can be ignored if not displaying webpages
-    webroot: /testwebroot/
+    webroot: /
     # Name of the stylesheet to use
     theme: dark
     title: "Viller's web file browser"
@@ -28,16 +28,4 @@ config:
                 directories: []
                 files: []
             recursive: true
-            description: "Description"
-        asdf/foo/:
-            blacklist:
-                all:
-                - genericblacklist2
-            recursive: true
-        asdf/foo/bar/:
-            display:
-                files: true
-            blacklist:
-                webpages:
-                - webpage3
-            description: "Derp."
+            description: ""

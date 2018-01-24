@@ -1,1 +1,0 @@
-This is a text file that should be hidden from the file browser at all times.
