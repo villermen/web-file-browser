@@ -2,6 +2,8 @@
 
 namespace Villermen\WebFileBrowser;
 
+use DateTime;
+
 class FileEntry extends Entry
 {
     /**
@@ -14,12 +16,18 @@ class FileEntry extends Entry
      */
     protected $bytes;
 
-    public function __construct(string $name, string $path, string $size, int $bytes)
+    /**
+     * @var DateTime
+     */
+    protected $modified;
+
+    public function __construct(string $name, string $path, string $size, int $bytes, DateTime $modified)
     {
         parent::__construct($name, $path);
 
         $this->size = $size;
         $this->bytes = $bytes;
+        $this->modified = $modified;
     }
 
     /**
@@ -36,5 +44,13 @@ class FileEntry extends Entry
     public function getBytes(): int
     {
         return $this->bytes;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getModified(): DateTime
+    {
+        return $this->modified;
     }
 }

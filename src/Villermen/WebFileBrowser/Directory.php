@@ -3,6 +3,7 @@
 namespace Villermen\WebFileBrowser;
 
 
+use DateTime;
 use DirectoryIterator;
 use Villermen\DataHandling\DataHandling;
 
@@ -133,7 +134,7 @@ class Directory
         if ($this->webpages !== null) {
             return;
         }
-        
+
         $this->webpages = [];
         $this->directories = [];
         $this->files = [];
@@ -167,7 +168,8 @@ class Directory
                     $path = DataHandling::formatPath($fileInfo->getPathname());
 
                     $this->files[] = new FileEntry(
-                        $filename, $path, DataHandling::formatBytesize($fileInfo->getSize()), $fileInfo->getSize()
+                        $filename, $path, DataHandling::formatBytesize($fileInfo->getSize()), $fileInfo->getSize(),
+                        (new DateTime())->setTimestamp($fileInfo->getMTime())
                     );
                 }
             }

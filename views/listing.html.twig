@@ -68,9 +68,10 @@
 
             <div class="list list-files">
                 {% for file in directory.files %}
-                    <a class="list-item list-file-webpage" href="{{ configuration.getUrl(file.path) }}">
+                    <a class="list-item list-item-file" href="{{ configuration.getUrl(file.path) }}">
                         <div class="list-item--name list-item-file--name">{{ file.name }}</div>
                         <div class="list-item--name list-item-file--size">{{ file.size }}</div>
+                        <div class="list-item--name list-item-file--modified">{{ file.modified.format("d-n-Y") }}</div>
                     </a>
                 {% endfor %}
             </div>

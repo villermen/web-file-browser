@@ -88,6 +88,12 @@ a:hover {
     border-width: 0 1px 1px 0;
     padding: 0.5rem 1rem;
 }
+.list-item-file--name {
+    width: 100%
+}
+.list-item-file--size, .list-item-file--modified {
+    white-space: nowrap;
+}
 .list-item > *:last-child {
     border-right-width: 0;
 }
