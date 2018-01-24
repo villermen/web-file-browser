@@ -11,6 +11,17 @@ config:
     indexFiles:
         - index.html
         - index.php
+    # Global blacklists and whitelists that will be used for every directory
+    blacklist:
+        webpages: []
+        directories: []
+        files: []
+        all: []
+    whitelist:
+        webpages: []
+        directories: []
+        files: []
+        all: []
     directories:
         # This is the default configuration for all directories, only non-default options have to be added
         /:

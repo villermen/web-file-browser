@@ -106,45 +106,52 @@ class Configuration
             throw new Exception("Directory is not able to display anything.");
         }
 
-        $allBlacklist = (array)($directoryConfig["blacklist"]["all"] ?? []);
+        // Merge global and directory blacklists and whitelists
+        $allBlacklist = array_merge(
+            $this->resolvedConfiguration["blacklist"]["all"] ?? [],
+            $directoryConfig["blacklist"]["all"] ?? []
+        );
 
-        if (isset($directoryConfig["blacklist"]["webpages"])) {
-            $webpageBlacklist = array_merge($allBlacklist, $directoryConfig["blacklist"]["webpages"]);
-        } else {
-            $webpageBlacklist = $allBlacklist;
-        }
+        $webpageBlacklist = array_merge(
+            $allBlacklist,
+            $this->resolvedConfiguration["blacklist"]["webpages"] ?? [],
+            $directoryConfig["blacklist"]["webpages"] ?? []
+        );
 
-        if (isset($directoryConfig["blacklist"]["directories"])) {
-            $directoryBlacklist = array_merge($allBlacklist, $directoryConfig["blacklist"]["directories"]);
-        } else {
-            $directoryBlacklist = $allBlacklist;
-        }
+        $directoryBlacklist = array_merge(
+            $allBlacklist,
+            $this->resolvedConfiguration["blacklist"]["directories"] ?? [],
+            $directoryConfig["blacklist"]["directories"] ?? []
+        );
 
-        if (isset($directoryConfig["blacklist"]["files"])) {
-            $fileBlacklist = array_merge($allBlacklist, $directoryConfig["blacklist"]["files"]);
-        } else {
-            $fileBlacklist = $allBlacklist;
-        }
+        $fileBlacklist = array_merge(
+            $allBlacklist,
+            $this->resolvedConfiguration["blacklist"]["files"] ?? [],
+            $directoryConfig["blacklist"]["files"] ?? []
+        );
 
-        $allWhitelist = (array)($directoryConfig["whitelist"]["all"] ?? []);
+        $allWhitelist = array_merge(
+            $this->resolvedConfiguration["whitelist"]["all"] ?? [],
+            $directoryConfig["whitelist"]["all"] ?? []
+        );
 
-        if (isset($directoryConfig["whitelist"]["webpages"])) {
-            $webpageWhitelist = array_merge($allWhitelist, $directoryConfig["whitelist"]["webpages"]);
-        } else {
-            $webpageWhitelist = $allWhitelist;
-        }
+        $webpageWhitelist = array_merge(
+            $allWhitelist,
+            $this->resolvedConfiguration["whitelist"]["webpages"] ?? [],
+            $directoryConfig["whitelist"]["webpages"] ?? []
+        );
 
-        if (isset($directoryConfig["whitelist"]["directories"])) {
-            $directoryWhitelist = array_merge($allWhitelist, $directoryConfig["whitelist"]["directories"]);
-        } else {
-            $directoryWhitelist = $allWhitelist;
-        }
+        $directoryWhitelist = array_merge(
+            $allWhitelist,
+            $this->resolvedConfiguration["whitelist"]["directories"] ?? [],
+            $directoryConfig["whitelist"]["directories"] ?? []
+        );
 
-        if (isset($directoryConfig["whitelist"]["files"])) {
-            $fileWhitelist = array_merge($allWhitelist, $directoryConfig["whitelist"]["files"]);
-        } else {
-            $fileWhitelist = $allWhitelist;
-        }
+        $fileWhitelist = array_merge(
+            $allWhitelist,
+            $this->resolvedConfiguration["whitelist"]["files"] ?? [],
+            $directoryConfig["whitelist"]["files"] ?? []
+        );
 
         $description = $exactMatch ? (string)($directoryConfig["description"] ?? "") : "";
 
