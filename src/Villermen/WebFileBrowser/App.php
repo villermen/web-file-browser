@@ -3,6 +3,7 @@
 namespace Villermen\WebFileBrowser;
 
 use Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig_Environment;
@@ -66,22 +67,51 @@ class App
 
         $accessible = $configuration->isDirectoryAccessible($requestedDirectory, $reason);
 
-        $twig = $this->getTwig($configuration);
-
         // Show a page not found page when the directory does not exist or is not accessible
         if (!$accessible) {
-            return new Response($twig->render("not-found.html.twig"), Response::HTTP_NOT_FOUND);
+            return new Response($this->getTwig($configuration)->render("not-found.html.twig"), Response::HTTP_NOT_FOUND);
         }
 
         $directory = $configuration->getDirectory($requestedDirectory);
 
-        $path = "/" . rtrim($configuration->getRelativePath($directory->getPath()), "/");
+        $archiver = new Archiver($configuration, $directory);
 
-        return new Response($twig->render("listing.html.twig", [
+        if ($request->query->has("prepare-download")) {
+            return $this->prepareDownload($configuration, $archiver);
+        }
+
+        return $this->showListing($configuration, $directory, $archiver);
+    }
+
+    private function showListing(Configuration $configuration, Directory $directory, Archiver $archiver)
+    {
+        $path = "/" . rtrim($configuration->getRelativeBrowserPath($directory->getPath()), "/");
+
+        return new Response($this->getTwig($configuration)->render("listing.html.twig", [
             "directory" => $directory,
-            "pathParts" => $this->getPathParts($path, $configuration, $directory),
-            "path" => $path
+            "pathParts" => $this->getPathParts($path, $configuration),
+            "path" => $path,
+            "archivable" => $archiver->canArchive()
         ]));
+    }
+
+    private function prepareDownload(Configuration $configuration, Archiver $archiver)
+    {
+        if (!$archiver->canArchive()) {
+            throw new Exception("Unable to archive directory.");
+        }
+
+        if (!$archiver->isArchiveReady()) {
+            if (!$archiver->isArchiving()) {
+                $archiver->createArchive();
+            } else {
+                $archiver->waitForCreation();
+            }
+        }
+
+        return new JsonResponse([
+            "archiveUrl" => $configuration->getUrl($archiver->getArchivePath())
+        ]);
     }
 
     private function getTwig(Configuration $configuration): Twig_Environment
@@ -106,11 +136,10 @@ class App
     /**
      * @param string $path
      * @param Configuration $configuration
-     * @param Directory $directory
      * @return array
      * @throws DataHandlingException
      */
-    private function getPathParts(string $path, Configuration $configuration, Directory $directory): array
+    private function getPathParts(string $path, Configuration $configuration): array
     {
         // Construct path parts for navigation
         $relativePathParts = explode("/", $path);

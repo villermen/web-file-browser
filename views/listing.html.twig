@@ -64,7 +64,20 @@
 
     {% if directory.files %}
         <section class="list-container list-container-files">
-            <div class="list-header list-header-files">Files</div>
+            <div class="list-header list-header-files">
+                Files
+
+                {#<!-- test -->#}
+                {#{% if archivable %}#}
+                    {#<span style="float: right; bottom: 2px; position: relative;">#}
+                        {#<i class="material-icons">file_download</i>#}
+                        {#<i class="material-icons spinner">refresh</i>#}
+                    {#</span>#}
+                {#{% endif %}#}
+                {#<!-- test -->#}
+            </div>
+
+
 
             <div class="list list-files">
                 {% for file in directory.files %}

@@ -26,6 +26,11 @@ class Configuration
     protected $baseUrl;
 
     /**
+     * @var string
+     */
+    protected $baseDirectory;
+
+    /**
      * Configuration constructor.
      * @param string $filePath
      * @param Request $request
@@ -45,8 +50,9 @@ class Configuration
         // Parse webroot
         $this->resolvedConfiguration["webroot"] = DataHandling::encodeUri(DataHandling::formatDirectory($this->resolvedConfiguration["webroot"]));
 
-        // Parse browser base URL
+        // Parse browser base URL and directory
         $this->baseUrl = DataHandling::encodeUri(DataHandling::formatDirectory("/", $request->getBasePath()));
+        $this->baseDirectory = DataHandling::formatAndResolveDirectory($request->server->get("DOCUMENT_ROOT"));
 
         // Normalize directories
         $parsedDirectorySettings = [];
@@ -196,11 +202,23 @@ class Configuration
     }
 
     /**
+     * Returns the URL to the browser's public directory.
+     *
      * @return string
      */
     public function getBaseUrl(): string
     {
         return $this->baseUrl;
+    }
+
+    /**
+     * Returns the path to the browser's public directory.
+     *
+     * @return string
+     */
+    public function getBaseDirectory()
+    {
+        return $this->baseDirectory;
     }
 
     /**
@@ -224,7 +242,7 @@ class Configuration
     }
 
     /**
-     * Returns a file browser url for the given directory.
+     * Returns a file browser url for the given absolute directory.
      *
      * @param string $directory
      * @return string
@@ -236,7 +254,7 @@ class Configuration
     }
 
     /**
-     * Converts a relative path to a URL relative to the browser's base URL.
+     * Converts a relative path to a URL relative to the file browser's base URL.
      *
      * @param string $path
      * @return string
@@ -247,15 +265,26 @@ class Configuration
     }
 
     /**
-     * Converts an absolute file path to a path relative to the browser's base URL.
+     * Converts an absolute path to a path relative to the file browser's base URL.
      *
      * @param string $path
      * @return string
      * @throws DataHandlingException
      */
-    public function getRelativePath(string $path): string
+    public function getRelativeBrowserPath(string $path): string
     {
         return DataHandling::formatPath(DataHandling::makePathRelative($path, $this->getRoot()));
+    }
+
+    /**
+     * Converts a path relative to the file browser's base URL to an absolute path.
+     *
+     * @param string $relativePath
+     * @return string
+     */
+    public function getAbsoluteBrowserPath(string $relativePath): string
+    {
+        return DataHandling::formatPath($this->getBaseDirectory(), $relativePath);
     }
 
     /**

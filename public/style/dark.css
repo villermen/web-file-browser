@@ -101,3 +101,12 @@ a:hover {
 .list-item:last-child > * {
     border-bottom-width: 0;
 }
+.spinner {
+    animation: spin 1s linear infinite;
+    padding-bottom: 0;
+    position: relative;
+    bottom: 3px;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
