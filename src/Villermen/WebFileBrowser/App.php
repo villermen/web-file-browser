@@ -97,6 +97,8 @@ class App
 
     private function prepareDownload(Configuration $configuration, Archiver $archiver)
     {
+        $archiver->removeObsoleteVersions();
+
         if (!$archiver->canArchive()) {
             throw new Exception("Unable to archive directory.");
         }

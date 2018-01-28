@@ -147,10 +147,31 @@ class Archiver
         } while (true);
     }
 
+    /**
+     * Removes obsolete previous versions of the archive for this directory.
+     */
+    public function removeObsoleteVersions()
+    {
+        $archivePath = $this->getArchivePath();
+
+        $matchedDirectories = glob(dirname($archivePath, 2) . "/" . $this->directoryChecksum . "*", GLOB_ONLYDIR);
+
+        foreach($matchedDirectories as $matchedDirectory) {
+            if (!DataHandling::endsWith(basename($matchedDirectory), $this->contentChecksum)) {
+                // Remove directory (and files directly in it)
+                $matchedFiles = glob($matchedDirectory. "/*");
+
+                foreach($matchedFiles as $matchedFile) {
+                    @unlink($matchedFile);
+                }
+
+                @rmdir($matchedDirectory);
+            }
+        }
+    }
+
     private function getLockPath()
     {
         return DataHandling::formatPath($this->getArchivePath() . ".lock");
     }
-
-    // TODO: Replace and timeout logic
 }
