@@ -12,6 +12,9 @@ class Archiver
     /** @var int */
     private static $creationTimeLimit = 5 * 60;
 
+    /** @var Configuration */
+    protected $configuration;
+
     /** @var Directory */
     protected $directory;
 
@@ -24,8 +27,9 @@ class Archiver
     /** @var int */
     private $contentChecksum = null;
 
-    public function __construct(Directory $directory, UrlGenerator $urlGenerator)
+    public function __construct(Configuration $configuration, Directory $directory, UrlGenerator $urlGenerator)
     {
+        $this->configuration = $configuration;
         $this->directory = $directory;
         $this->urlGenerator = $urlGenerator;
     }
@@ -43,31 +47,30 @@ class Archiver
     {
         $relativeDirectoryPath = "/" . $this->urlGenerator->getRelativePath($this->directory->getPath());
 
-        if ($this->directoryChecksum) {
-            // Ensure that the actual root directory name is not exposed
-            if (strlen($relativeDirectoryPath) > 1) {
-                $basename = basename($relativeDirectoryPath);
-            } else {
-                $basename = "root";
+        if (!$this->directoryChecksum) {
+            // Calcuate checksums
+            $this->directoryChecksum = hash("crc32b", $relativeDirectoryPath);
+
+            $contentHash = hash_init("crc32b");
+            foreach($this->directory->getFiles() as $file) {
+                hash_update($contentHash, $file->getName());
+                hash_update($contentHash, $file->getBytes());
+                hash_update($contentHash, $file->getModified()->getTimestamp());
             }
-
-            return DataHandling::formatPath(
-                $this->urlGenerator->getBrowserBaseDirectory(), "cache",
-                $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
-            );
+            $this->contentChecksum = hash_final($contentHash);
         }
 
-        $this->directoryChecksum = hash("crc32b", $relativeDirectoryPath);
-
-        $contentHash = hash_init("crc32b");
-        foreach($this->directory->getFiles() as $file) {
-            hash_update($contentHash, $file->getName());
-            hash_update($contentHash, $file->getBytes());
-            hash_update($contentHash, $file->getModified()->getTimestamp());
+        // Ensure that the actual root directory name is not exposed as archive filename
+        if (strlen($relativeDirectoryPath) > 1) {
+            $basename = basename($relativeDirectoryPath);
+        } else {
+            $basename = "root";
         }
-        $this->contentChecksum = hash_final($contentHash);
 
-        return $this->getArchivePath();
+        return DataHandling::formatPath(
+            $this->urlGenerator->getBrowserBaseDirectory(), "cache",
+            $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
+        );
     }
 
     /**
@@ -89,7 +92,20 @@ class Archiver
      */
     public function isArchiving()
     {
-        return file_exists($this->getLockPath());
+        $lockPath = $this->getLockPath();
+
+        $lockFileExists = file_exists($lockPath);
+
+        if (!$lockFileExists) {
+            return false;
+        }
+
+        // Remove the lock file if the maximum creation time has expired
+        if (time() - filemtime($lockPath) > self::$creationTimeLimit) {
+            return !@unlink($lockPath);
+        }
+
+        return true;
     }
 
     /**
@@ -193,6 +209,14 @@ class Archiver
                 @rmdir($matchedDirectory);
             }
         }
+    }
+
+    /**
+     * Removes all archives that haven't been downloaded for the configured lifetime.
+     */
+    public function removeExpiredArchives()
+    {
+        // TODO:
     }
 
     /**

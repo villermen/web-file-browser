@@ -9,6 +9,8 @@ config:
     title: Viller's web file browser
     # This is the default value for whether a directory's visible files can be downloaded as a ZIP archive
     archivable: true
+    # Time in seconds of no downloads after which an archive will be deleted
+    archiveLifetime: 1209600
     # A webpage directory must have at least one of these files present in order to be shown
     indexFiles:
         - index.html

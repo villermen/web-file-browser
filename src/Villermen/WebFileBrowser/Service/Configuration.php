@@ -223,4 +223,14 @@ class Configuration
     {
         return $this->resolvedConfiguration["webroot"];
     }
+
+    /**
+     * The time in seconds of no downloads after which an archive will be deleted.
+     *
+     * @return int
+     */
+    public function getArchiveLifetime(): int
+    {
+        return (int)($this->resolvedConfiguration["archiveLifetime"] ?? 1209600);
+    }
 }

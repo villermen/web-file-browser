@@ -79,7 +79,7 @@ class App
 
             $directory = $configuration->getDirectory($requestedDirectory);
 
-            $archiver = new Archiver($directory, $urlGenerator);
+            $archiver = new Archiver($configuration, $directory, $urlGenerator);
 
             if ($request->query->has("prepare-download")) {
                 return $this->prepareDownload($archiver, $urlGenerator);

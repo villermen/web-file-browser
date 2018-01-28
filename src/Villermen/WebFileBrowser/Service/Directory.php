@@ -105,8 +105,6 @@ class Directory
 
     /**
      * Scans the directory and populates the entry fields if not already done.
-     *
-     * @return void
      */
     private function fetchEntries()
     {
