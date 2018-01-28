@@ -61,28 +61,43 @@ class App
      */
     private function handleRequest(Request $request): Response
     {
-        $configuration = new Configuration($this->configFile, $request);
+        try {
+            $configuration = new Configuration($this->configFile, $request);
 
-        $requestedDirectory = DataHandling::formatDirectory($configuration->getBaseDirectory(), $request->getPathInfo());
+            $requestedDirectory = DataHandling::formatDirectory($configuration->getBaseDirectory(), $request->getPathInfo());
 
-        $accessible = $configuration->isDirectoryAccessible($requestedDirectory, $reason);
+            $accessible = $configuration->isDirectoryAccessible($requestedDirectory, $reason);
 
-        // Show a page not found page when the directory does not exist or is not accessible
-        if (!$accessible) {
-            return new Response($this->getTwig($configuration)->render("not-found.html.twig"), Response::HTTP_NOT_FOUND);
+            // Show a page not found page when the directory does not exist or is not accessible
+            if (!$accessible) {
+                return new Response($this->getTwig($configuration)->render("not-found.html.twig"), Response::HTTP_NOT_FOUND);
+            }
+
+            $directory = $configuration->getDirectory($requestedDirectory);
+
+            $archiver = new Archiver($configuration, $directory);
+
+            if ($request->query->has("prepare-download")) {
+                return $this->prepareDownload($configuration, $archiver);
+            }
+
+            return $this->showListing($configuration, $directory, $archiver);
+        } catch (Exception $exception) {
+            error_log($exception);
+            return new Response("<html><body><h1>Internal Server Error</h1><p>An internal server error occurred.</p></body></html>", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $directory = $configuration->getDirectory($requestedDirectory);
-
-        $archiver = new Archiver($configuration, $directory);
-
-        if ($request->query->has("prepare-download")) {
-            return $this->prepareDownload($configuration, $archiver);
-        }
-
-        return $this->showListing($configuration, $directory, $archiver);
     }
 
+    /**
+     * @param Configuration $configuration
+     * @param Directory $directory
+     * @param Archiver $archiver
+     * @return Response
+     * @throws DataHandlingException
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
     private function showListing(Configuration $configuration, Directory $directory, Archiver $archiver)
     {
         $path = "/" . rtrim($configuration->getRelativePath($directory->getPath()), "/");
@@ -95,8 +110,17 @@ class App
         ]));
     }
 
+    /**
+     * @param Configuration $configuration
+     * @param Archiver $archiver
+     * @return JsonResponse
+     * @throws DataHandlingException
+     * @throws Exception
+     */
     private function prepareDownload(Configuration $configuration, Archiver $archiver)
     {
+        set_time_limit(5 * 60);
+
         $archiver->removeObsoleteVersions();
 
         if (!$archiver->canArchive()) {
