@@ -109,22 +109,29 @@ class Archiver
             // Archiver! Do the Thing!
             $archive = new ZipArchive();
 
-            if (!$archive->open($this->getLockPath(), ZipArchive::OVERWRITE)) {
+            if (!@$archive->open($this->getLockPath(), ZipArchive::OVERWRITE)) {
                 throw new Exception("Could not create the archive.");
             }
 
             foreach ($this->directory->getFiles() as $file) {
-                if (!$archive->addFile($file->getPath(), $file->getName())) {
+                if (!@$archive->addFile($file->getPath(), $file->getName())) {
                     throw new Exception(sprintf("Could not add %s to the archive.", $file->getName()));
                 }
             }
 
-            if (!$archive->close() || !rename($this->getLockPath(), $this->getArchivePath())) {
+            if (!@$archive->close() || !rename($this->getLockPath(), $this->getArchivePath())) {
                 throw new Exception("Could not finalize the archive.");
             }
         } finally {
+            try {
+                if ($archive) {
+                    @$archive->close();
+                }
+            } catch (Exception $exception) {
+            }
+
             if (file_exists($this->getLockPath())) {
-                unlink($this->getLockPath());
+                @unlink($this->getLockPath());
             }
         }
     }
