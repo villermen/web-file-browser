@@ -9,11 +9,11 @@ use ZipArchive;
 
 class Archiver
 {
-    /** @var Configuration */
-    protected $configuration;
-
     /** @var Directory */
     protected $directory;
+
+    /** @var UrlGenerator */
+    protected $urlGenerator;
 
     /** @var int */
     private $directoryChecksum = null;
@@ -21,10 +21,10 @@ class Archiver
     /** @var int */
     private $contentChecksum = null;
 
-    public function __construct(Configuration $configuration, Directory $directory)
+    public function __construct(Directory $directory, UrlGenerator $urlGenerator)
     {
-        $this->configuration = $configuration;
         $this->directory = $directory;
+        $this->urlGenerator = $urlGenerator;
     }
 
     public function canArchive()
@@ -38,7 +38,7 @@ class Archiver
      */
     public function getArchivePath()
     {
-        $relativeDirectoryPath = "/" . $this->configuration->getRelativePath($this->directory->getPath());
+        $relativeDirectoryPath = "/" . $this->urlGenerator->getRelativePath($this->directory->getPath());
 
         if ($this->directoryChecksum) {
             // Ensure that the actual root directory name is not exposed
@@ -49,7 +49,7 @@ class Archiver
             }
 
             return DataHandling::formatPath(
-                $this->configuration->getBrowserBaseDirectory(), "cache",
+                $this->urlGenerator->getBrowserBaseDirectory(), "cache",
                 $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
             );
         }

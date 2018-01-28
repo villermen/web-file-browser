@@ -40,7 +40,7 @@
 
             <div class="list list-webpages">
                 {% for webpage in directory.webpages %}
-                    <a class="list-item list-item-webpage" href="{{ configuration.getUrl(webpage.path) }}">
+                    <a class="list-item list-item-webpage" href="{{ urlGenerator.getUrl(webpage.path) }}">
                         <div class="list-item--name list-item-webpage--name">{{ webpage.name }}</div>
                     </a>
                 {% endfor %}
@@ -54,7 +54,7 @@
 
             <div class="list list-directories">
                 {% for directory in directory.directories %}
-                    <a class="list-item list-item-directory" href="{{ configuration.getBrowserUrlFromDataPath(directory.path) }}">
+                    <a class="list-item list-item-directory" href="{{ urlGenerator.getBrowserUrlFromDataPath(directory.path) }}">
                         <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
                     </a>
                 {% endfor %}
@@ -81,7 +81,7 @@
 
             <div class="list list-files">
                 {% for file in directory.files %}
-                    <a class="list-item list-item-file" href="{{ configuration.getUrl(file.path) }}">
+                    <a class="list-item list-item-file" href="{{ urlGenerator.getUrl(file.path) }}">
                         <div class="list-item--name list-item-file--name">{{ file.name }}</div>
                         <div class="list-item--name list-item-file--size">{{ file.size }}</div>
                         <div class="list-item--name list-item-file--modified">{{ file.modified.format("d-m-Y") }}</div>

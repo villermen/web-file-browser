@@ -13,6 +13,7 @@ use Villermen\DataHandling\DataHandlingException;
 use Villermen\WebFileBrowser\Service\Archiver;
 use Villermen\WebFileBrowser\Service\Configuration;
 use Villermen\WebFileBrowser\Service\Directory;
+use Villermen\WebFileBrowser\Service\UrlGenerator;
 
 class App
 {
@@ -65,25 +66,26 @@ class App
     {
         try {
             $configuration = new Configuration($this->configFile, $request);
+            $urlGenerator = new UrlGenerator($configuration, $request);
 
-            $requestedDirectory = DataHandling::formatDirectory($configuration->getBaseDirectory(), $request->getPathInfo());
+            $requestedDirectory = DataHandling::formatDirectory($configuration->getRoot(), $request->getPathInfo());
 
             $accessible = $configuration->isDirectoryAccessible($requestedDirectory, $reason);
 
             // Show a page not found page when the directory does not exist or is not accessible
             if (!$accessible) {
-                return new Response($this->getTwig($configuration)->render("not-found.html.twig"), Response::HTTP_NOT_FOUND);
+                return new Response($this->getTwig($configuration, $urlGenerator)->render("not-found.html.twig"), Response::HTTP_NOT_FOUND);
             }
 
             $directory = $configuration->getDirectory($requestedDirectory);
 
-            $archiver = new Archiver($configuration, $directory);
+            $archiver = new Archiver($directory, $urlGenerator);
 
             if ($request->query->has("prepare-download")) {
-                return $this->prepareDownload($configuration, $archiver);
+                return $this->prepareDownload($archiver, $urlGenerator);
             }
 
-            return $this->showListing($configuration, $directory, $archiver);
+            return $this->showListing($configuration, $urlGenerator, $directory, $archiver);
         } catch (Exception $exception) {
             error_log($exception);
             return new Response("<html><body><h1>Internal Server Error</h1><p>An internal server error occurred.</p></body></html>", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -92,6 +94,7 @@ class App
 
     /**
      * @param Configuration $configuration
+     * @param UrlGenerator $urlGenerator
      * @param Directory $directory
      * @param Archiver $archiver
      * @return Response
@@ -100,26 +103,26 @@ class App
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    private function showListing(Configuration $configuration, Directory $directory, Archiver $archiver)
+    private function showListing(Configuration $configuration, UrlGenerator $urlGenerator, Directory $directory, Archiver $archiver)
     {
-        $path = "/" . rtrim($configuration->getRelativePath($directory->getPath()), "/");
+        $path = "/" . rtrim($urlGenerator->getRelativePath($directory->getPath()), "/");
 
-        return new Response($this->getTwig($configuration)->render("listing.html.twig", [
+        return new Response($this->getTwig($configuration, $urlGenerator)->render("listing.html.twig", [
             "directory" => $directory,
-            "pathParts" => $this->getPathParts($path, $configuration),
+            "pathParts" => $this->getPathParts($path, $configuration, $urlGenerator),
             "path" => $path,
             "downloadable" => $archiver->canArchive()
         ]));
     }
 
     /**
-     * @param Configuration $configuration
      * @param Archiver $archiver
+     * @param UrlGenerator $urlGenerator
      * @return JsonResponse
      * @throws DataHandlingException
      * @throws Exception
      */
-    private function prepareDownload(Configuration $configuration, Archiver $archiver)
+    private function prepareDownload(Archiver $archiver, UrlGenerator $urlGenerator)
     {
         set_time_limit(5 * 60);
 
@@ -138,11 +141,11 @@ class App
         }
 
         return new JsonResponse([
-            "archiveUrl" => $configuration->getBrowserUrl($archiver->getArchivePath())
+            "archiveUrl" => $urlGenerator->getBrowserUrl($archiver->getArchivePath())
         ]);
     }
 
-    private function getTwig(Configuration $configuration): Twig_Environment
+    private function getTwig(Configuration $configuration, UrlGenerator $urlGenerator): Twig_Environment
     {
         if ($this->twig) {
             return $this->twig;
@@ -155,6 +158,7 @@ class App
         ]);
 
         $twig->addGlobal("configuration", $configuration);
+        $twig->addGlobal("urlGenerator", $urlGenerator);
 
         $this->twig = $twig;
 
@@ -166,10 +170,11 @@ class App
      *
      * @param string $path
      * @param Configuration $configuration
+     * @param UrlGenerator $urlGenerator
      * @return array
      * @throws DataHandlingException
      */
-    private function getPathParts(string $path, Configuration $configuration): array
+    private function getPathParts(string $path, Configuration $configuration, UrlGenerator $urlGenerator): array
     {
         // Construct path parts for navigation
         if ($path === "/") {
@@ -181,12 +186,12 @@ class App
         $pathParts = [];
         for($i = 0; $i < count($relativePathParts); $i++) {
 
-            $absolutePath = DataHandling::formatDirectory($configuration->getBaseDirectory(), ...array_slice($relativePathParts, 0, $i + 1));
+            $absolutePath = DataHandling::formatDirectory($configuration->getRoot(), ...array_slice($relativePathParts, 0, $i + 1));
 
             // Add an href only if possible
             $href = "";
             if ($configuration->isDirectoryAccessible($absolutePath)) {
-                $href = $configuration->getBrowserUrlFromDataPath($absolutePath);
+                $href = $urlGenerator->getBrowserUrlFromDataPath($absolutePath);
             }
 
             $pathParts[] = [
