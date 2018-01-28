@@ -67,17 +67,17 @@
             <div class="list-header list-header-files">
                 Files
 
-                {#<!-- test -->#}
-                {#{% if archivable %}#}
-                    {#<span style="float: right; bottom: 2px; position: relative;">#}
-                        {#<i class="material-icons">file_download</i>#}
-                        {#<i class="material-icons spinner">refresh</i>#}
-                    {#</span>#}
-                {#{% endif %}#}
-                {#<!-- test -->#}
+                {% if downloadable %}
+                    <div class="list-header-actions">
+                        <a class="list-header-action list-header-action--archive-download">
+                            <i class="material-icons">file_download</i>
+                        </a>
+                        <span class="list-header-action list-header-action--archive-download-wait hidden">
+                            <i class="material-icons spinner">refresh</i>
+                        </span>
+                    </div>
+                {% endif %}
             </div>
-
-
 
             <div class="list list-files">
                 {% for file in directory.files %}
@@ -89,5 +89,79 @@
                 {% endfor %}
             </div>
         </section>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {% if downloadable %}
+        <script>
+            var downloadButtons = document.querySelectorAll(".list-header-action--archive-download");
+            var downloadWaitButtons = document.querySelectorAll(".list-header-action--archive-download-wait");
+
+            downloadButtons.forEach(function(downloadButton) {
+                downloadButton.addEventListener("click", function() {
+                    downloadArchive();
+                });
+            });
+
+            downloadWaitButtons.forEach(function(downloadWaitButton) {
+                downloadWaitButton.addEventListener("click", function() {
+                    cancelDownload(true);
+                });
+            });
+
+            var downloadRequest;
+
+            function downloadArchive() {
+                // Visual
+                downloadButtons.forEach(function(downloadButton2) {
+                    downloadButton2.classList.add("hidden");
+                });
+
+                downloadWaitButtons.forEach(function(downloadWaitButton) {
+                    downloadWaitButton.classList.remove("hidden");
+                });
+
+                // Logical
+                downloadRequest = new XMLHttpRequest();
+                downloadRequest.addEventListener("error", function() {
+                    cancelDownload();
+                });
+                downloadRequest.addEventListener("abort", function() {
+                    cancelDownload();
+                });
+                downloadRequest.addEventListener("load", function() {
+                    if (this.status !== 200) {
+                        return;
+                    }
+
+                    var response = JSON.parse(this.response);
+
+                    if (response.archiveUrl) {
+                        window.location.href = response.archiveUrl;
+                    }
+
+                    cancelDownload();
+                });
+                downloadRequest.open("GET", window.location.href.split('?')[0] + "?prepare-download");
+                downloadRequest.send();
+            }
+
+            function cancelDownload(cancelRequest) {
+                // Visual
+                downloadWaitButtons.forEach(function(downloadWaitButton2) {
+                    downloadWaitButton2.classList.add("hidden");
+                });
+
+                downloadButtons.forEach(function(downloadButton) {
+                    downloadButton.classList.remove("hidden");
+                });
+
+                // Logical
+                if (cancelRequest && downloadRequest) {
+                    downloadRequest.abort();
+                }
+            }
+        </script>
     {% endif %}
 {% endblock %}

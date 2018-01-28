@@ -28,7 +28,7 @@ class Archiver
 
     public function canArchive()
     {
-        return !$this->directory->isEmpty();
+        return count($this->directory->getFiles()) > 0;
     }
 
     public function getArchivePath()

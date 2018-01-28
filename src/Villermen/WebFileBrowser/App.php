@@ -91,7 +91,7 @@ class App
             "directory" => $directory,
             "pathParts" => $this->getPathParts($path, $configuration),
             "path" => $path,
-            "archivable" => $archiver->canArchive()
+            "downloadable" => $archiver->canArchive()
         ]));
     }
 
