@@ -7,6 +7,7 @@ config:
     # Name of the stylesheet to use
     theme: dark
     title: Viller's web file browser
+    archivingEnabled: true
     # A webpage directory must have at least one of these files present in order to be shown
     indexFiles:
         - index.html

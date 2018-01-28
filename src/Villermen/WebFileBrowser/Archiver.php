@@ -28,7 +28,7 @@ class Archiver
 
     public function canArchive()
     {
-        return count($this->directory->getFiles()) > 0;
+        return $this->configuration->isArchivingEnabled() && count($this->directory->getFiles()) > 0;
     }
 
     public function getArchivePath()

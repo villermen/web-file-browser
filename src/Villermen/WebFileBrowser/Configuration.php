@@ -291,11 +291,26 @@ class Configuration
      */
     public function getTheme(): string
     {
-        return $this->resolvedConfiguration["theme"] ?? "dark";
+        return (string)($this->resolvedConfiguration["theme"] ?? "dark");
     }
 
+    /**
+     * Title of the application to be used as suffix for the page name.
+     *
+     * @return string
+     */
     public function getTitle(): string
     {
-        return $this->resolvedConfiguration["title"] ?? "Viller's web file browser";
+        return (string)($this->resolvedConfiguration["title"] ?? "Viller's web file browser");
+    }
+
+    /**
+     * Whether archiving and downloading of all accessible files in a directory is enabled.
+     *
+     * @return bool
+     */
+    public function isArchivingEnabled(): bool
+    {
+        return (bool)($this->resolvedConfiguration["archivingEnabled"] ?? true);
     }
 }
