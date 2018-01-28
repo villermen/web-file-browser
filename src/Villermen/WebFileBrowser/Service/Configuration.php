@@ -1,6 +1,6 @@
 <?php
 
-namespace Villermen\WebFileBrowser;
+namespace Villermen\WebFileBrowser\Service;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Request;

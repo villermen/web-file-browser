@@ -13,6 +13,8 @@ class ComposerScripts
 
     /**
      * Copies config.dist.yml to config.yml if the latter doesn't exist yet.
+     *
+     * @param Event $event
      */
     private static function copyDefaultConfiguration(Event $event)
     {

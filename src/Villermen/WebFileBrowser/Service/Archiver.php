@@ -1,9 +1,10 @@
 <?php
 
-namespace Villermen\WebFileBrowser;
+namespace Villermen\WebFileBrowser\Service;
 
 use Exception;
 use Villermen\DataHandling\DataHandling;
+use Villermen\DataHandling\DataHandlingException;
 use ZipArchive;
 
 class Archiver
@@ -31,6 +32,10 @@ class Archiver
         return $this->directory->isArchivable() && count($this->directory->getFiles()) > 0;
     }
 
+    /**
+     * @return string
+     * @throws DataHandlingException
+     */
     public function getArchivePath()
     {
         $relativeDirectoryPath = "/" . $this->configuration->getRelativePath($this->directory->getPath());
@@ -66,6 +71,7 @@ class Archiver
      * Returns whether an archive exists for the directory in its current state.
      *
      * @return bool
+     * @throws DataHandlingException
      */
     public function isArchiveReady()
     {
@@ -76,6 +82,7 @@ class Archiver
      * Returns whether the archive is being created.
      *
      * @return bool
+     * @throws DataHandlingException
      */
     public function isArchiving()
     {
@@ -124,7 +131,7 @@ class Archiver
             }
         } finally {
             try {
-                if ($archive) {
+                if (isset($archive)) {
                     @$archive->close();
                 }
             } catch (Exception $exception) {
@@ -138,6 +145,8 @@ class Archiver
 
     /**
      * Loops until the archive file has been created.
+     *
+     * @throws Exception
      */
     public function waitForCreation()
     {
@@ -156,6 +165,8 @@ class Archiver
 
     /**
      * Removes obsolete previous versions of the archive for this directory.
+     *
+     * @throws DataHandlingException
      */
     public function removeObsoleteVersions()
     {
@@ -177,6 +188,10 @@ class Archiver
         }
     }
 
+    /**
+     * @return string
+     * @throws DataHandlingException
+     */
     private function getLockPath()
     {
         return DataHandling::formatPath($this->getArchivePath() . ".lock");

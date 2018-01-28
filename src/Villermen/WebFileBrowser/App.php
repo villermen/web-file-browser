@@ -10,6 +10,9 @@ use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Villermen\DataHandling\DataHandling;
 use Villermen\DataHandling\DataHandlingException;
+use Villermen\WebFileBrowser\Service\Archiver;
+use Villermen\WebFileBrowser\Service\Configuration;
+use Villermen\WebFileBrowser\Service\Directory;
 
 class App
 {
@@ -57,7 +60,6 @@ class App
      *
      * @param Request $request
      * @return Response
-     * @throws Exception
      */
     private function handleRequest(Request $request): Response
     {

@@ -1,11 +1,14 @@
 <?php
 
-namespace Villermen\WebFileBrowser;
-
+namespace Villermen\WebFileBrowser\Service;
 
 use DateTime;
 use DirectoryIterator;
 use Villermen\DataHandling\DataHandling;
+use Villermen\WebFileBrowser\Model\DirectoryEntry;
+use Villermen\WebFileBrowser\Model\Entry;
+use Villermen\WebFileBrowser\Model\FileEntry;
+use Villermen\WebFileBrowser\Model\WebpageEntry;
 
 class Directory
 {

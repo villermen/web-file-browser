@@ -1,6 +1,6 @@
 <?php
 
-namespace Villermen\WebFileBrowser;
+namespace Villermen\WebFileBrowser\Model;
 
 class WebpageEntry extends Entry
 {
