@@ -134,6 +134,8 @@ class App
     }
 
     /**
+     * Construct path parts for navigation.
+     *
      * @param string $path
      * @param Configuration $configuration
      * @return array
@@ -142,10 +144,15 @@ class App
     private function getPathParts(string $path, Configuration $configuration): array
     {
         // Construct path parts for navigation
-        $relativePathParts = explode("/", $path);
+        if ($path === "/") {
+            $relativePathParts = [""];
+        } else {
+            $relativePathParts = explode("/", $path);
+        }
 
         $pathParts = [];
         for($i = 0; $i < count($relativePathParts); $i++) {
+
             $absolutePath = DataHandling::formatDirectory($configuration->getBaseDirectory(), ...array_slice($relativePathParts, 0, $i + 1));
 
             // Add an href only if possible

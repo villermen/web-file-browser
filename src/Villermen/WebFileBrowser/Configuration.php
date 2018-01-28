@@ -266,7 +266,14 @@ class Configuration
      */
     public function getBrowserUrlFromDataPath(string $path): string
     {
-        return DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
+        $browserUrl = DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
+
+        // Trailing slash might have been removed by getRelativePath(). Add back in.
+        if (DataHandling::endsWith($path, "/") && !DataHandling::endsWith($browserUrl, "/")) {
+            $browserUrl .= "/";
+        }
+
+        return $browserUrl;
     }
 
     /**
