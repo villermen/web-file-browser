@@ -20,15 +20,11 @@ class Configuration
      */
     protected $cachedDirectories = [];
 
-    /**
-     * @var string
-     */
-    protected $baseUrl;
+    /** @var string */
+    protected $browserBaseUrl;
 
-    /**
-     * @var string
-     */
-    protected $baseDirectory;
+    /** @var string */
+    protected $browserBaseDirectory;
 
     /**
      * Configuration constructor.
@@ -51,8 +47,8 @@ class Configuration
         $this->resolvedConfiguration["webroot"] = DataHandling::encodeUri(DataHandling::formatDirectory($this->resolvedConfiguration["webroot"]));
 
         // Parse browser base URL and directory
-        $this->baseUrl = DataHandling::encodeUri(DataHandling::formatDirectory("/", $request->getBasePath()));
-        $this->baseDirectory = DataHandling::formatAndResolveDirectory($request->server->get("DOCUMENT_ROOT"));
+        $this->browserBaseUrl = DataHandling::encodeUri(DataHandling::formatDirectory("/", $request->getBasePath()));
+        $this->browserBaseDirectory = DataHandling::formatAndResolveDirectory($request->server->get("DOCUMENT_ROOT"), $request->getBasePath());
 
         // Normalize directories
         $parsedDirectorySettings = [];
@@ -82,9 +78,9 @@ class Configuration
         // Parse configuration to find this or the first recursive parent directory
         $directoryConfig = false;
         $configDirectory = "";
-        $relativeDirectoryParts = explode("/", DataHandling::makePathRelative($directory, $this->getRoot()));
+        $relativeDirectoryParts = explode("/", DataHandling::makePathRelative($directory, $this->getBaseDirectory()));
         for ($i = count($relativeDirectoryParts) - 1; $i >= 0; $i--) {
-            $configDirectory = DataHandling::formatDirectory($this->getRoot(), implode("/", array_slice($relativeDirectoryParts, 0, $i)));
+            $configDirectory = DataHandling::formatDirectory($this->getBaseDirectory(), implode("/", array_slice($relativeDirectoryParts, 0, $i)));
             $directoryConfig = $this->resolvedConfiguration["directories"][$configDirectory] ?? false;
 
             if ($directoryConfig) {
@@ -186,39 +182,91 @@ class Configuration
     }
 
     /**
-     * @return string
-     */
-    public function getRoot(): string
-    {
-        return $this->resolvedConfiguration["root"];
-    }
-
-    /**
-     * @return string
-     */
-    public function getWebroot(): string
-    {
-        return $this->resolvedConfiguration["webroot"];
-    }
-
-    /**
-     * Returns the URL to the browser's public directory.
+     * Returns the URL to the data directory root, as set by the "webroot" configuration option.
      *
      * @return string
      */
     public function getBaseUrl(): string
     {
-        return $this->baseUrl;
+        return $this->resolvedConfiguration["webroot"];
     }
 
     /**
-     * Returns the path to the browser's public directory.
+     * Returns the path to the data directory root, as set by the "root" configuration option.
      *
      * @return string
      */
-    public function getBaseDirectory()
+    public function getBaseDirectory(): string
     {
-        return $this->baseDirectory;
+        return $this->resolvedConfiguration["root"];
+    }
+
+    /**
+     * Returns the URL to the file browser's public directory.
+     *
+     * @return string
+     */
+    public function getBrowserBaseUrl(): string
+    {
+        return $this->browserBaseUrl;
+    }
+
+    /**
+     * Returns the path to the file browser's public directory.
+     *
+     * @return string
+     */
+    public function getBrowserBaseDirectory()
+    {
+        return $this->browserBaseDirectory;
+    }
+
+    /**
+     * Returns a data URL for the given absolute path.
+     *
+     * @param string $path
+     * @return string
+     * @throws DataHandlingException
+     */
+    public function getUrl(string $path): string
+    {
+        return DataHandling::encodeUri(DataHandling::formatPath($this->getBaseUrl(), DataHandling::makePathRelative($path, $this->getBaseDirectory())));
+    }
+
+    /**
+     * Returns a path relative to the data root based on the given absolute path.
+     *
+     * @param string $absolutePath
+     * @return string
+     * @throws DataHandlingException
+     */
+    public function getRelativePath(string $absolutePath): string
+    {
+        return DataHandling::makePathRelative($absolutePath, $this->getBaseDirectory());
+    }
+
+    /**
+     * Returns a file browser URL for the given absolute path.
+     *
+     * @param string $path
+     * @return string
+     * @throws DataHandlingException
+     */
+    public function getBrowserUrl(string $path): string
+    {
+        return DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), DataHandling::makePathRelative($path, $this->getBrowserBaseDirectory())));
+    }
+
+    /**
+     * Returns a file browser URL for the given path to a data directory or file.
+     *
+     * @param string $path
+     * @return string
+     * @throws DataHandlingException
+     */
+    public function getBrowserUrlFromDataPath(string $path): string
+    {
+        return DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
     }
 
     /**
@@ -227,64 +275,6 @@ class Configuration
     public function getIndexFiles(): array
     {
         return (array)($this->resolvedConfiguration["indexFiles"] ?? []);
-    }
-
-    /**
-     * Returns an URL to the given absolute path.
-     *
-     * @param string $path
-     * @return string
-     * @throws DataHandlingException
-     */
-    public function getUrl(string $path): string
-    {
-        return DataHandling::encodeUri(DataHandling::formatPath($this->getWebroot(), DataHandling::makePathRelative($path, $this->getRoot())));
-    }
-
-    /**
-     * Returns a file browser url for the given absolute directory.
-     *
-     * @param string $directory
-     * @return string
-     * @throws DataHandlingException
-     */
-    public function getBrowserUrl(string $directory): string
-    {
-        return DataHandling::encodeUri(DataHandling::formatDirectory($this->getBaseUrl(), DataHandling::makePathRelative($directory, $this->getRoot())));
-    }
-
-    /**
-     * Converts a relative path to a URL relative to the file browser's base URL.
-     *
-     * @param string $path
-     * @return string
-     */
-    public function getRelativeUrl(string $path): string
-    {
-        return DataHandling::encodeUri(DataHandling::formatPath($this->getBaseUrl(), $path));
-    }
-
-    /**
-     * Converts an absolute path to a path relative to the file browser's base URL.
-     *
-     * @param string $path
-     * @return string
-     * @throws DataHandlingException
-     */
-    public function getRelativeBrowserPath(string $path): string
-    {
-        return DataHandling::formatPath(DataHandling::makePathRelative($path, $this->getRoot()));
-    }
-
-    /**
-     * Converts a path relative to the file browser's base URL to an absolute path.
-     *
-     * @param string $relativePath
-     * @return string
-     */
-    public function getAbsoluteBrowserPath(string $relativePath): string
-    {
-        return DataHandling::formatPath($this->getBaseDirectory(), $relativePath);
     }
 
     /**

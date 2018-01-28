@@ -40,7 +40,7 @@ class App
 
     public function __construct(string $configFile)
     {
-        // Change to project root for relative directory pointing
+        // Change to project root for relative directory resolving
         chdir(__DIR__ . "/../../../");
 
         $this->configFile = $configFile;
@@ -63,7 +63,7 @@ class App
     {
         $configuration = new Configuration($this->configFile, $request);
 
-        $requestedDirectory = DataHandling::formatDirectory($configuration->getRoot(), $request->getPathInfo());
+        $requestedDirectory = DataHandling::formatDirectory($configuration->getBaseDirectory(), $request->getPathInfo());
 
         $accessible = $configuration->isDirectoryAccessible($requestedDirectory, $reason);
 
@@ -85,7 +85,7 @@ class App
 
     private function showListing(Configuration $configuration, Directory $directory, Archiver $archiver)
     {
-        $path = "/" . rtrim($configuration->getRelativeBrowserPath($directory->getPath()), "/");
+        $path = "/" . rtrim($configuration->getRelativePath($directory->getPath()), "/");
 
         return new Response($this->getTwig($configuration)->render("listing.html.twig", [
             "directory" => $directory,
@@ -110,7 +110,7 @@ class App
         }
 
         return new JsonResponse([
-            "archiveUrl" => $configuration->getUrl($archiver->getArchivePath())
+            "archiveUrl" => $configuration->getBrowserUrl($archiver->getArchivePath())
         ]);
     }
 
@@ -146,12 +146,12 @@ class App
 
         $pathParts = [];
         for($i = 0; $i < count($relativePathParts); $i++) {
-            $absolutePath = DataHandling::formatDirectory($configuration->getRoot(), ...array_slice($relativePathParts, 0, $i + 1));
+            $absolutePath = DataHandling::formatDirectory($configuration->getBaseDirectory(), ...array_slice($relativePathParts, 0, $i + 1));
 
             // Add an href only if possible
             $href = "";
             if ($configuration->isDirectoryAccessible($absolutePath)) {
-                $href = $configuration->getBrowserUrl($absolutePath);
+                $href = $configuration->getBrowserUrlFromDataPath($absolutePath);
             }
 
             $pathParts[] = [

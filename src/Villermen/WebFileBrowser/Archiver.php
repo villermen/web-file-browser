@@ -33,7 +33,7 @@ class Archiver
 
     public function getArchivePath()
     {
-        $relativeDirectoryPath = "/" . $this->configuration->getRelativeBrowserPath($this->directory->getPath());
+        $relativeDirectoryPath = "/" . $this->configuration->getRelativePath($this->directory->getPath());
 
         if ($this->directoryChecksum) {
             // Ensure that the actual root directory name is not exposed
@@ -43,9 +43,10 @@ class Archiver
                 $basename = "root";
             }
 
-            return $this->configuration->getAbsoluteBrowserPath(DataHandling::formatPath(
-                $relativeDirectoryPath, "cache", $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
-            ));
+            return DataHandling::formatPath(
+                $this->configuration->getBrowserBaseDirectory(), "cache",
+                $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
+            );
         }
 
         $this->directoryChecksum = hash("crc32b", $relativeDirectoryPath);
@@ -150,4 +151,6 @@ class Archiver
     {
         return DataHandling::formatPath($this->getArchivePath() . ".lock");
     }
+
+    // TODO: Replace and timeout logic
 }

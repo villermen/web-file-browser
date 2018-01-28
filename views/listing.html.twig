@@ -54,7 +54,7 @@
 
             <div class="list list-directories">
                 {% for directory in directory.directories %}
-                    <a class="list-item list-item-directory" href="{{ configuration.getBrowserUrl(directory.path) }}">
+                    <a class="list-item list-item-directory" href="{{ configuration.getBrowserUrlFromDataPath(directory.path) }}">
                         <div class="list-item--name list-item-directory--name">{{ directory.name }}</div>
                     </a>
                 {% endfor %}
