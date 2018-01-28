@@ -83,6 +83,9 @@ class App
 
             if ($request->query->has("prepare-download")) {
                 return $this->prepareDownload($archiver, $urlGenerator);
+            } else {
+                // Delete expired archives only when we are not preparing one, so that we are not deleting an archive that is to be used just moments after
+                $archiver->deleteExpiredArchives();
             }
 
             return $this->showListing($configuration, $urlGenerator, $directory, $archiver);
@@ -124,7 +127,7 @@ class App
      */
     private function prepareDownload(Archiver $archiver, UrlGenerator $urlGenerator)
     {
-        $archiver->removeObsoleteVersions();
+        $archiver->deleteObsoleteVersions();
 
         if (!$archiver->canArchive()) {
             throw new Exception("Unable to archive directory.");

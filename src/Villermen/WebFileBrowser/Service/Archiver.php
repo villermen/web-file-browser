@@ -41,7 +41,7 @@ class Archiver
 
     /**
      * @return string
-     * @throws DataHandlingException
+     * @throws Exception
      */
     public function getArchivePath()
     {
@@ -68,33 +68,65 @@ class Archiver
         }
 
         return DataHandling::formatPath(
-            $this->urlGenerator->getBrowserBaseDirectory(), "cache",
-            $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
+            $this->getOrCreateCacheDirectory(), $this->directoryChecksum . $this->contentChecksum, $basename . ".zip"
         );
     }
 
     /**
+     * @return string
+     * @throws Exception
+     */
+    private function getOrCreateCacheDirectory()
+    {
+        $cacheDirectory = DataHandling::formatDirectory($this->urlGenerator->getBrowserBaseDirectory(), "cache");
+
+        if (!is_dir($cacheDirectory) && !mkdir($cacheDirectory, 0775)) {
+            throw new Exception("Failed to create cache directory.");
+        }
+
+        return $cacheDirectory;
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function getLockPath()
+    {
+        return $this->getArchivePath() . ".lock";
+    }
+
+    /**
      * Returns whether an archive exists for the directory in its current state.
+     * If it does, it will update its modification time so that it does not expire for a while.
      *
      * @return bool
-     * @throws DataHandlingException
+     * @throws Exception
      */
     public function isArchiveReady()
     {
-        return file_exists($this->getArchivePath());
+        $archivePath = $this->getArchivePath();
+
+        if (!is_file($archivePath)) {
+            return false;
+        }
+
+        @touch($archivePath);
+
+        return true;
     }
 
     /**
      * Returns whether the archive is being created.
      *
      * @return bool
-     * @throws DataHandlingException
+     * @throws Exception
      */
     public function isArchiving()
     {
         $lockPath = $this->getLockPath();
 
-        $lockFileExists = file_exists($lockPath);
+        $lockFileExists = is_file($lockPath);
 
         if (!$lockFileExists) {
             return false;
@@ -125,7 +157,7 @@ class Archiver
             $archiveDirectory = dirname($this->getArchivePath());
 
             if (!file_exists($archiveDirectory)) {
-                if (!mkdir($archiveDirectory, 0755)) {
+                if (!mkdir($archiveDirectory, 0775)) {
                     throw new Exception("Could not create archive directory");
                 }
             }
@@ -189,42 +221,59 @@ class Archiver
     /**
      * Removes obsolete previous versions of the archive for this directory.
      *
-     * @throws DataHandlingException
+     * @throws Exception
      */
-    public function removeObsoleteVersions()
+    public function deleteObsoleteVersions()
     {
         $archivePath = $this->getArchivePath();
 
-        $matchedDirectories = glob(dirname($archivePath, 2) . "/" . $this->directoryChecksum . "*", GLOB_ONLYDIR);
-
-        foreach($matchedDirectories as $matchedDirectory) {
-            if (!DataHandling::endsWith(basename($matchedDirectory), $this->contentChecksum)) {
-                // Remove directory (and files directly in it)
-                $matchedFiles = glob($matchedDirectory. "/*");
-
-                foreach($matchedFiles as $matchedFile) {
-                    @unlink($matchedFile);
-                }
-
-                @rmdir($matchedDirectory);
+        // Find all archives with the same directory checksum, and delete the ones that are not the current one
+        $matchedArchives = glob($this->getOrCreateCacheDirectory() . $this->directoryChecksum . "*/*.zip");
+        foreach($matchedArchives as $matchedArchive) {
+            if ($matchedArchive !== $archivePath) {
+                $this->deleteArchive($matchedArchive);
             }
         }
     }
 
     /**
      * Removes all archives that haven't been downloaded for the configured lifetime.
+     * Take note that this may remove an archive that we are about to download.
+     *
+     * @throws Exception
      */
-    public function removeExpiredArchives()
+    public function deleteExpiredArchives()
     {
-        // TODO:
+        $archives = glob($this->getOrCreateCacheDirectory() . "*/*.zip");
+
+        foreach($archives as $archive) {
+            if (time() - filemtime($archive) > $this->configuration->getArchiveLifetime()) {
+                $this->deleteArchive($archive);
+            }
+        }
     }
 
     /**
-     * @return string
-     * @throws DataHandlingException
+     * Deletes an archive, including its directory.
+     *
+     * @param $archive
+     * @throws Exception
      */
-    private function getLockPath()
+    private function deleteArchive($archive)
     {
-        return DataHandling::formatPath($this->getArchivePath() . ".lock");
+        $archiveDirectory = dirname($archive) . "/";
+
+        // Delete all files in directory
+        $matchedFiles = glob($archiveDirectory . "*");
+        foreach($matchedFiles as $matchedFile) {
+            if (!@unlink($matchedFile)) {
+                throw new Exception("Could not delete cache file " . $matchedFile);
+            }
+        }
+
+        // Delete (now empty) directory
+        if (!@rmdir($archiveDirectory)) {
+            throw new Exception("Could not delete cache directory " . $archiveDirectory);
+        }
     }
 }

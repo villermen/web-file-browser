@@ -1,5 +1,4 @@
 /vendor/
 /.idea/
 /config/config.yml
-/public/cache/*
-!.gitkeep
+/public/cache/
