@@ -115,7 +115,7 @@ class Directory
         $this->directories = [];
         $this->files = [];
 
-        foreach(new DirectoryIterator($this->path) as $fileInfo) {
+        foreach (new DirectoryIterator($this->path) as $fileInfo) {
             $filename = $fileInfo->getFilename();
 
             // Make sure the entry is presentable (readable and not hidden)
@@ -125,7 +125,7 @@ class Directory
 
                     if ($this->canDisplayWebpages() && $this->passesWebpageFilter($filename)) {
                         // Webpages need to have an index file present
-                        foreach($this->configuration->getIndexFiles() as $indexFile) {
+                        foreach ($this->configuration->getIndexFiles() as $indexFile) {
                             if (file_exists(DataHandling::mergePaths($path, $indexFile))) {
                                 $this->webpages[] = new WebpageEntry($filename, $path);
 
@@ -152,7 +152,7 @@ class Directory
         }
 
         // Sort entries
-        $sortFunction = function(Entry $entry1, Entry $entry2) {
+        $sortFunction = function (Entry $entry1, Entry $entry2) {
             return strnatcmp($entry1->getName(), $entry2->getName());
         };
 
