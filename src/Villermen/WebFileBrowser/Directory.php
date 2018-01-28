@@ -9,84 +9,57 @@ use Villermen\DataHandling\DataHandling;
 
 class Directory
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $path;
 
-    /**
-     * @var Configuration
-     */
+    /** @var Configuration */
     protected $configuration;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $displayWebpages;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $displayDirectories;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $displayFiles;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $webpageBlacklist;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $directoryBlacklist;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $fileBlacklist;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $webpageWhitelist;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $directoryWhitelist;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $fileWhitelist;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $description;
 
-    /**
-     * @var WebpageEntry[]|null
-     */
+    /** @var bool */
+    protected $archivable = false;
+
+    /** @var WebpageEntry[]|null */
     private $webpages = null;
 
-    /**
-     * @var DirectoryEntry[]|null
-     */
+    /** @var DirectoryEntry[]|null */
     private $directories = null;
 
-    /**
-     * @var FileEntry[]|null
-     */
+    /** @var FileEntry[]|null */
     private $files = null;
 
-    public function __construct(string $path, Configuration $configuration,  bool $displayWebpages, bool $displayDirectories, bool $displayFiles,
+    public function __construct(string $path, Configuration $configuration, bool $displayWebpages, bool $displayDirectories, bool $displayFiles,
         array $webpageBlacklist, array $directoryBlacklist, array $fileBlacklist, array $webpageWhitelist,
-        array $directoryWhitelist, array $fileWhitelist, string $description)
+        array $directoryWhitelist, array $fileWhitelist, string $description, bool $archivable)
     {
         $this->path = $path;
         $this->configuration = $configuration;
@@ -100,6 +73,7 @@ class Directory
         $this->directoryWhitelist = $directoryWhitelist;
         $this->fileWhitelist = $fileWhitelist;
         $this->description = $description;
+        $this->archivable = $archivable;
     }
 
     /**
@@ -128,6 +102,8 @@ class Directory
 
     /**
      * Scans the directory and populates the entry fields if not already done.
+     *
+     * @return void
      */
     private function fetchEntries()
     {
@@ -264,5 +240,13 @@ class Directory
     public function isEmpty(): bool
     {
         return count($this->getWebpages()) + count($this->getDirectories()) + count($this->getFiles()) == 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isArchivable(): bool
+    {
+        return $this->archivable;
     }
 }

@@ -157,8 +157,13 @@ class Configuration
 
         $description = $exactMatch ? (string)($directoryConfig["description"] ?? "") : "";
 
-        $directory = new Directory($directory, $this, $displayWebpages, $displayDirectories, $displayFiles, $webpageBlacklist,
-            $directoryBlacklist, $fileBlacklist, $webpageWhitelist, $directoryWhitelist, $fileWhitelist, $description);
+        $archivable = (bool)($directoryConfig["archivable"] ?? $this->resolvedConfiguration["archivable"] ?? false);
+
+        $directory = new Directory(
+            $directory, $this, $displayWebpages, $displayDirectories, $displayFiles, $webpageBlacklist,
+            $directoryBlacklist, $fileBlacklist, $webpageWhitelist, $directoryWhitelist, $fileWhitelist, $description,
+            $archivable
+        );
 
         return $directory;
     }
@@ -302,15 +307,5 @@ class Configuration
     public function getTitle(): string
     {
         return (string)($this->resolvedConfiguration["title"] ?? "Viller's web file browser");
-    }
-
-    /**
-     * Whether archiving and downloading of all accessible files in a directory is enabled.
-     *
-     * @return bool
-     */
-    public function isArchivingEnabled(): bool
-    {
-        return (bool)($this->resolvedConfiguration["archivingEnabled"] ?? true);
     }
 }
