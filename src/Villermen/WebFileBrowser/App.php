@@ -124,8 +124,6 @@ class App
      */
     private function prepareDownload(Archiver $archiver, UrlGenerator $urlGenerator)
     {
-        set_time_limit(5 * 60);
-
         $archiver->removeObsoleteVersions();
 
         if (!$archiver->canArchive()) {

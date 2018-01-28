@@ -9,6 +9,9 @@ use ZipArchive;
 
 class Archiver
 {
+    /** @var int */
+    private static $creationTimeLimit = 5 * 60;
+
     /** @var Directory */
     protected $directory;
 
@@ -100,6 +103,8 @@ class Archiver
             throw new Exception("Archive is already being created.");
         }
 
+        set_time_limit(self::$creationTimeLimit);
+
         try {
             $archiveDirectory = dirname($this->getArchivePath());
 
@@ -153,6 +158,8 @@ class Archiver
         if (!$this->isArchiving() && !$this->isArchiveReady()) {
             throw new Exception("Archive is not being created, so waiting for that is pretty pointless.");
         }
+
+        set_time_limit(self::$creationTimeLimit);
 
         do {
             if (file_exists($this->getArchivePath())) {
