@@ -59,7 +59,7 @@ class Configuration
      */
     public function getDirectory(string $directory): Directory
     {
-        $directory = DataHandling::formatAndResolveDirectory($directory);
+        $directory = DataHandling::formatDirectory($directory);
 
         if (isset($this->cachedDirectories[$directory])) {
             return $this->cachedDirectories[$directory];
