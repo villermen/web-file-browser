@@ -4,14 +4,14 @@
     "type": "project",
     "require": {
         "symfony/yaml": "^3.2",
-        "symfony/http-foundation": "^3.2",
-        "php": ">=7.0",
+        "symfony/http-foundation": "^3.4",
+        "php": ">=7.1",
         "twig/twig": "^2.1",
         "villermen/data-handling": "^1.14"
     },
     "config": {
         "platform": {
-            "php": "7.0"
+            "php": "7.1.0"
         },
         "optimize-autoloader": true
     },
