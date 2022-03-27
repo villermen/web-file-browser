@@ -6,8 +6,8 @@ use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Twig_Environment;
-use Twig_Loader_Filesystem;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 use Villermen\DataHandling\DataHandling;
 use Villermen\DataHandling\DataHandlingException;
 use Villermen\WebFileBrowser\Service\Archiver;
@@ -17,30 +17,9 @@ use Villermen\WebFileBrowser\Service\UrlGenerator;
 
 class App
 {
-    /**
-     * @var string
-     */
-    protected $requestDirectory;
+    private string $configFile;
 
-    /**
-     * @var Directory
-     */
-    protected $directorySettings;
-
-    /**
-     * @var string
-     */
-    protected $browserBaseUrl;
-
-    /**
-     * @var string
-     */
-    protected $configFile;
-
-    /**
-     * @var Twig_Environment
-     */
-    private $twig;
+    private ?Environment $twig = null;
 
     public function __construct(string $configFile)
     {
@@ -58,9 +37,6 @@ class App
 
     /**
      * Turns the supplied request into a rendered response.
-     *
-     * @param Request $request
-     * @return Response
      */
     private function handleRequest(Request $request): Response
     {
@@ -95,18 +71,7 @@ class App
         }
     }
 
-    /**
-     * @param Configuration $configuration
-     * @param UrlGenerator $urlGenerator
-     * @param Directory $directory
-     * @param Archiver $archiver
-     * @return Response
-     * @throws DataHandlingException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    private function showListing(Configuration $configuration, UrlGenerator $urlGenerator, Directory $directory, Archiver $archiver)
+    private function showListing(Configuration $configuration, UrlGenerator $urlGenerator, Directory $directory, Archiver $archiver): Response
     {
         $path = "/" . rtrim($urlGenerator->getRelativePath($directory->getPath()), "/");
 
@@ -146,14 +111,13 @@ class App
         ]);
     }
 
-    private function getTwig(Configuration $configuration, UrlGenerator $urlGenerator): Twig_Environment
+    private function getTwig(Configuration $configuration, UrlGenerator $urlGenerator): Environment
     {
         if ($this->twig) {
             return $this->twig;
         }
 
-        $twigLoader = new Twig_Loader_Filesystem("views/");
-        $twig = new Twig_Environment($twigLoader, [
+        $twig = new Environment(New FilesystemLoader("views/"), [
             "autoescape" => "html",
             "strict_variables" => true
         ]);

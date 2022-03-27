@@ -65,6 +65,10 @@ class Configuration
             return $this->cachedDirectories[$directory];
         }
 
+        if (!is_dir($directory)) {
+            throw new Exception("Specified directory does not exist.");
+        }
+
         // Parse configuration to find this or the first recursive parent directory
         $directoryConfig = false;
         $configDirectory = "";
@@ -149,13 +153,11 @@ class Configuration
 
         $archivable = (bool)($directoryConfig["archivable"] ?? $this->resolvedConfiguration["archivable"] ?? false);
 
-        $directory = new Directory(
+        return new Directory(
             $directory, $this, $displayWebpages, $displayDirectories, $displayFiles, $webpageBlacklist,
             $directoryBlacklist, $fileBlacklist, $webpageWhitelist, $directoryWhitelist, $fileWhitelist, $description,
             $archivable
         );
-
-        return $directory;
     }
 
     /**

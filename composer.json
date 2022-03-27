@@ -3,17 +3,18 @@
     "description": "Configurable web file browser for listing files, directories and webpages.",
     "type": "project",
     "require": {
-        "symfony/yaml": "^3.2",
-        "symfony/http-foundation": "^3.4",
-        "php": ">=7.1",
-        "twig/twig": "^2.1",
-        "villermen/data-handling": "^1.14"
+        "php": ">=7.4",
+        "symfony/http-foundation": "^5.4",
+        "symfony/yaml": "^5.4",
+        "twig/twig": "^3.3",
+        "villermen/data-handling": "^1.15"
     },
     "config": {
         "platform": {
-            "php": "7.1.0"
+            "php": "7.4.3"
         },
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "sort-packages": true
     },
     "license": "MIT",
     "authors": [
@@ -26,7 +27,7 @@
         "psr-4": { "": "src/" }
     },
     "require-dev": {
-        "symfony/var-dumper": "^3.2"
+        "symfony/var-dumper": "^5.4"
     },
     "scripts": {
         "post-install-cmd": "Villermen\\WebFileBrowser\\ComposerScripts::postInstall"
