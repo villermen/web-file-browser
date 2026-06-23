@@ -3,15 +3,15 @@
     "description": "Configurable web file browser for listing files, directories and webpages.",
     "type": "project",
     "require": {
-        "php": ">=8.2",
-        "symfony/http-foundation": "^7.3",
-        "symfony/yaml": "^7.3",
-        "twig/twig": "^3.3",
+        "php": ">=8.3",
+        "symfony/http-foundation": "^7.4.13",
+        "symfony/yaml": "^7.4.13",
+        "twig/twig": "^3.27.1",
         "villermen/data-handling": "^1.15"
     },
     "config": {
         "platform": {
-            "php": "8.2"
+            "php": "8.3.6"
         },
         "optimize-autoloader": true,
         "sort-packages": true
@@ -27,7 +27,7 @@
         "psr-4": { "": "src/" }
     },
     "require-dev": {
-        "symfony/var-dumper": "^7.3"
+        "symfony/var-dumper": "^7.4.8"
     },
     "scripts": {
         "dev-server": [
