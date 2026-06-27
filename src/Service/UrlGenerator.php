@@ -11,33 +11,24 @@ use Villermen\DataHandling\DataHandlingException;
  */
 class UrlGenerator
 {
-    /** @var string */
-    private $browserBaseUrl;
+    private readonly string $browserBaseUrl;
 
-    /** @var string */
-    private $browserBaseDirectory;
-
-    /** @var Configuration */
-    protected $configuration;
+    private readonly string $browserBaseDirectory;
 
     /**
-     * @param Configuration $configuration
-     * @param Request $request
      * @throws DataHandlingException
      */
-    public function __construct(Configuration $configuration, Request $request)
-    {
-        $this->configuration = $configuration;
-
+    public function __construct(
+        private readonly Configuration $configuration,
+        Request $request
+    ) {
         // Parse browser base URL and directory
-        $this->browserBaseUrl = DataHandling::encodeUri(DataHandling::formatDirectory("/", $request->getBasePath()));
-        $this->browserBaseDirectory = DataHandling::formatAndResolveDirectory($request->server->get("DOCUMENT_ROOT"), $request->getBasePath());
+        $this->browserBaseUrl = DataHandling::encodeUri(DataHandling::formatDirectory('/', $request->getBasePath()));
+        $this->browserBaseDirectory = DataHandling::formatAndResolveDirectory($request->server->get('DOCUMENT_ROOT'), $request->getBasePath());
     }
 
     /**
      * Returns the URL to the data directory root, as set by the "webroot" configuration option.
-     *
-     * @return string
      */
     public function getBaseUrl(): string
     {
@@ -46,8 +37,6 @@ class UrlGenerator
 
     /**
      * Returns the path to the data directory root, as set by the "root" configuration option.
-     *
-     * @return string
      */
     public function getBaseDirectory(): string
     {
@@ -56,8 +45,6 @@ class UrlGenerator
 
     /**
      * Returns the URL to the file browser's public directory.
-     *
-     * @return string
      */
     public function getBrowserBaseUrl(): string
     {
@@ -66,10 +53,8 @@ class UrlGenerator
 
     /**
      * Returns the path to the file browser's public directory.
-     *
-     * @return string
      */
-    public function getBrowserBaseDirectory()
+    public function getBrowserBaseDirectory(): string
     {
         return $this->browserBaseDirectory;
     }
@@ -77,8 +62,6 @@ class UrlGenerator
     /**
      * Returns a data URL for the given absolute path.
      *
-     * @param string $path
-     * @return string
      * @throws DataHandlingException
      */
     public function getUrl(string $path): string
@@ -89,8 +72,6 @@ class UrlGenerator
     /**
      * Returns a path relative to the data root based on the given absolute path.
      *
-     * @param string $absolutePath
-     * @return string
      * @throws DataHandlingException
      */
     public function getRelativePath(string $absolutePath): string
@@ -101,8 +82,6 @@ class UrlGenerator
     /**
      * Returns a file browser URL for the given absolute path.
      *
-     * @param string $path
-     * @return string
      * @throws DataHandlingException
      */
     public function getBrowserUrl(string $path): string
@@ -113,8 +92,6 @@ class UrlGenerator
     /**
      * Returns a file browser URL for the given path to a data directory or file.
      *
-     * @param string $path
-     * @return string
      * @throws DataHandlingException
      */
     public function getBrowserUrlFromDataPath(string $path): string
@@ -122,8 +99,8 @@ class UrlGenerator
         $browserUrl = DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
 
         // Trailing slash might have been removed by getRelativePath(). Add back in.
-        if (DataHandling::endsWith($path, "/") && !DataHandling::endsWith($browserUrl, "/")) {
-            $browserUrl .= "/";
+        if (str_ends_with($path, '/') && !str_ends_with($browserUrl, '/')) {
+            $browserUrl .= '/';
         }
 
         return $browserUrl;

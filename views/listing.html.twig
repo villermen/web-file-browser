@@ -66,7 +66,6 @@
         <section class="list-container list-container-files">
             <div class="list-header list-header-files">
                 Files
-
                 {% if downloadable %}
                     <div class="list-header-actions">
                         <a class="list-header-action list-header-action--archive-download" title="Download all files">
@@ -78,7 +77,6 @@
                     </div>
                 {% endif %}
             </div>
-
             <div class="list list-files">
                 {% for file in directory.files %}
                     <a class="list-item list-item-file" href="{{ urlGenerator.getUrl(file.path) }}">
@@ -95,8 +93,8 @@
 {% block scripts %}
     {% if downloadable %}
         <script>
-            var downloadButtons = document.querySelectorAll(".list-header-action--archive-download");
-            var downloadWaitButtons = document.querySelectorAll(".list-header-action--archive-download-wait");
+            const downloadButtons = document.querySelectorAll(".list-header-action--archive-download");
+            const downloadWaitButtons = document.querySelectorAll(".list-header-action--archive-download-wait");
 
             downloadButtons.forEach(function(downloadButton) {
                 downloadButton.addEventListener("click", function() {
@@ -110,7 +108,7 @@
                 });
             });
 
-            var downloadRequest;
+            let downloadRequest;
 
             function downloadArchive() {
                 // Visual

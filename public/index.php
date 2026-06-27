@@ -9,7 +9,7 @@ if (php_sapi_name() === 'cli-server') {
     }
 }
 
-require_once(__DIR__ . "/../vendor/autoload.php");
+require_once(__DIR__ . '/../vendor/autoload.php');
 
-$app = new Villermen\WebFileBrowser\App(__DIR__ . "/../config/config.yml");
+$app = new Villermen\WebFileBrowser\App(__DIR__ . '/../config.yml');
 $app->run();

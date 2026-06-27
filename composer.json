@@ -4,6 +4,7 @@
     "type": "project",
     "require": {
         "php": ">=8.3",
+        "ext-zip": "*",
         "symfony/http-foundation": "^7.4.13",
         "symfony/yaml": "^7.4.13",
         "twig/twig": "^3.27.1",
@@ -24,7 +25,7 @@
         }
     ],
     "autoload": {
-        "psr-4": { "": "src/" }
+        "psr-4": { "Villermen\\WebFileBrowser\\": "src/" }
     },
     "require-dev": {
         "symfony/var-dumper": "^7.4.8"
@@ -33,7 +34,6 @@
         "dev-server": [
             "Composer\\Config::disableProcessTimeout",
             "php -S localhost:8080 -t public public/index.php"
-        ],
-        "post-install-cmd": "Villermen\\WebFileBrowser\\ComposerScripts::postInstall"
+        ]
     }
 }

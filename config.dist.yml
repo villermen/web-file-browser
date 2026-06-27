@@ -1,7 +1,7 @@
 # Copy this file to config.yml and adjust
 config:
     # The base directory for the browser to browse. Can be a path relative to the project, or an absolute path
-    root: ""
+    root: "public"
     # The relative web path that points to the same directory as root
     webroot: /
     # Name of the stylesheet to use
@@ -30,9 +30,9 @@ config:
         # This is the default configuration for all directories, only non-default options have to be added
         /:
             display:
-                webpages: false
-                directories: false
-                files: false
+                webpages: true
+                directories: true
+                files: true
             blacklist:
                 webpages: []
                 directories: []
@@ -43,6 +43,6 @@ config:
                 directories: []
                 files: []
                 all: []
-            recursive: false
+            recursive: true
             description: ""
             archivable: true

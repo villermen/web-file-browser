@@ -7,20 +7,17 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         <link rel="shorcut icon" href="{{ urlGenerator.browserBaseUrl ~ "favicon.ico" }}" />
     </head>
-
     <body>
         <div class="header-container">
             <header class="header">
                 {% block header %}{% endblock %}
             </header>
         </div>
-
         <div class="content-container">
             <div class="content">
                {% block content %}{% endblock %}
             </div>
         </div>
-
         {% block scripts %}{% endblock %}
     </body>
 </html>
