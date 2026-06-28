@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb53483f812c9dcffd5ef7c355899efe",
+    "content-hash": "c4fdbc5c643419b6e028eb00f9763a93",
     "packages": [
         {
             "name": "symfony/deprecation-contracts",
@@ -485,16 +485,16 @@
         },
         {
             "name": "villermen/data-handling",
-            "version": "v2.0.1",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/villermen/data-handling.git",
-                "reference": "fdf2f0ad6a3834933a807573752370ad0bb5bd8b"
+                "reference": "d1f9cc7880a9a8dbef301aa3640a27d8bee81659"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/villermen/data-handling/zipball/fdf2f0ad6a3834933a807573752370ad0bb5bd8b",
-                "reference": "fdf2f0ad6a3834933a807573752370ad0bb5bd8b",
+                "url": "https://api.github.com/repos/villermen/data-handling/zipball/d1f9cc7880a9a8dbef301aa3640a27d8bee81659",
+                "reference": "d1f9cc7880a9a8dbef301aa3640a27d8bee81659",
                 "shasum": ""
             },
             "require": {
@@ -517,9 +517,9 @@
             "description": "Library for general data sanitization and validation.",
             "support": {
                 "issues": "https://github.com/villermen/data-handling/issues",
-                "source": "https://github.com/villermen/data-handling/tree/v2.0.1"
+                "source": "https://github.com/villermen/data-handling/tree/v2.1.0"
             },
-            "time": "2026-06-28T00:53:57+00:00"
+            "time": "2026-06-28T02:24:21+00:00"
         }
     ],
     "packages-dev": [

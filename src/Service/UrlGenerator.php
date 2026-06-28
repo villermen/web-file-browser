@@ -3,6 +3,7 @@
 namespace Villermen\WebFileBrowser\Service;
 
 use Symfony\Component\HttpFoundation\Request;
+use Villermen\DataHandling\Clean;
 use Villermen\DataHandling\Path;
 use Villermen\WebFileBrowser\Exception\UrlGeneratorException;
 
@@ -23,7 +24,7 @@ class UrlGenerator
         Request $request
     ) {
         // Parse browser base URL and directory
-        $this->browserBaseUrl = htmlspecialchars(Path::format('/', $request->getBasePath(), '/'));
+        $this->browserBaseUrl = Clean::url(Path::format('/', $request->getBasePath(), '/'));
         $this->browserBaseDirectory = Path::format($request->server->get('DOCUMENT_ROOT'), $request->getBasePath(), '/');
         if (!is_dir($this->browserBaseDirectory)) {
             throw new UrlGeneratorException(sprintf('Failed to resolve browser base directory "%s".', $this->browserBaseDirectory));
@@ -69,7 +70,7 @@ class UrlGenerator
      */
     public function getUrl(string $path): string
     {
-        return htmlspecialchars(Path::format($this->getBaseUrl(), $this->getRelativePath($path)));
+        return Clean::url(Path::format($this->getBaseUrl(), $this->getRelativePath($path)));
     }
 
     /**
@@ -99,7 +100,7 @@ class UrlGenerator
             throw new UrlGeneratorException(sprintf('Unable to make path "%s" relative.', $path));
         }
 
-        return htmlspecialchars(Path::format($this->getBrowserBaseUrl(), $relativePath));
+        return Clean::url(Path::format($this->getBrowserBaseUrl(), $relativePath));
     }
 
     /**
@@ -109,7 +110,7 @@ class UrlGenerator
      */
     public function getBrowserUrlFromDataPath(string $path): string
     {
-        $browserUrl = htmlspecialchars(Path::format($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
+        $browserUrl = Clean::url(Path::format($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
 
         // Trailing slash might have been removed by getRelativePath(). Add back in.
         if (str_ends_with($path, '/') && !str_ends_with($browserUrl, '/')) {

@@ -4,6 +4,7 @@ namespace Villermen\WebFileBrowser\Service;
 
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
+use Villermen\DataHandling\Clean;
 use Villermen\DataHandling\Path;
 use Villermen\WebFileBrowser\Exception\ConfigurationException;
 
@@ -35,7 +36,7 @@ class Configuration
         }
 
         // Parse webroot
-        $this->resolvedConfiguration['webroot'] = htmlspecialchars(Path::format($this->resolvedConfiguration['webroot'], '/'));
+        $this->resolvedConfiguration['webroot'] = Clean::url(Path::format($this->resolvedConfiguration['webroot'], '/'));
 
         // Normalize directories
         $parsedDirectorySettings = [];
