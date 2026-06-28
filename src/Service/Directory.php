@@ -4,7 +4,8 @@ namespace Villermen\WebFileBrowser\Service;
 
 use DateTime;
 use DirectoryIterator;
-use Villermen\DataHandling\DataHandling;
+use Villermen\DataHandling\Filter;
+use Villermen\DataHandling\Path;
 use Villermen\WebFileBrowser\Model\Entry;
 use Villermen\WebFileBrowser\Model\FileEntry;
 
@@ -78,12 +79,12 @@ class Directory
             // Make sure the entry is presentable (readable and not hidden)
             if ($fileInfo->isReadable() && $filename[0] != '.') {
                 if ($fileInfo->isDir()) {
-                    $path = DataHandling::formatDirectory($fileInfo->getPathname());
+                    $path = Path::format($fileInfo->getPathname(), '/');
 
                     if ($this->canDisplayWebpages() && $this->passesWebpageFilter($filename)) {
                         // Webpages need to have an index file present
                         foreach ($this->configuration->getIndexFiles() as $indexFile) {
-                            if (file_exists(DataHandling::mergePaths($path, $indexFile))) {
+                            if (file_exists(Path::format($path, $indexFile))) {
                                 $this->webpages[] = new Entry($filename, $path);
 
                                 break;
@@ -98,10 +99,10 @@ class Directory
                         }
                     }
                 } elseif ($this->canDisplayFiles() && $fileInfo->isFile() && $this->passesFileFilter($filename)) {
-                    $path = DataHandling::formatPath($fileInfo->getPathname());
+                    $path = Path::format($fileInfo->getPathname());
 
                     $this->files[] = new FileEntry(
-                        $filename, $path, DataHandling::formatBytesize($fileInfo->getSize()), $fileInfo->getSize(),
+                        $filename, $path, Path::formatFilesize($fileInfo->getSize()), $fileInfo->getSize(),
                         (new DateTime())->setTimestamp($fileInfo->getMTime())
                     );
                 }
@@ -118,32 +119,47 @@ class Directory
         usort($this->files, $sortFunction);
     }
 
-    private function passesWebpageFilter($filename): bool
+    private function passesWebpageFilter(string $filename): bool
     {
+        return $this->passesFilter($filename, $this->webpageWhitelist, $this->webpageBlacklist);
+    }
+
+    private function passesDirectoryFilter(string $filename): bool
+    {
+        return $this->passesFilter($filename, $this->directoryWhitelist, $this->directoryBlacklist);
+    }
+
+    private function passesFileFilter(string $filename): bool
+    {
+        return $this->passesFilter($filename, $this->fileWhitelist, $this->fileBlacklist);
+    }
+
+    /**
+     * @param string[] $whitelist
+     * @param string[] $blacklist
+     */
+    private function passesFilter(string $filename, array $whitelist, array $blacklist): bool
+    {
+        $filename = strtolower($filename);
+
         // Whitelist is only used if it is not empty, and overrules the blacklist
-        if (count($this->webpageWhitelist)) {
-            return DataHandling::matchesFilterInsensitive($filename, $this->webpageWhitelist);
+        if (count($whitelist) > 0) {
+            foreach ($whitelist as $filter) {
+                if (Filter::match($filename, $filter)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
-        return !DataHandling::matchesFilterInsensitive($filename, $this->webpageBlacklist);
-    }
-
-    private function passesDirectoryFilter($filename): bool
-    {
-        if (count($this->directoryWhitelist)) {
-            return DataHandling::matchesFilterInsensitive($filename, $this->directoryWhitelist);
+        foreach ($blacklist as $filter) {
+            if (Filter::match($filename, $filter)) {
+                return false;
+            }
         }
 
-        return !DataHandling::matchesFilterInsensitive($filename, $this->directoryBlacklist);
-    }
-
-    private function passesFileFilter($filename): bool
-    {
-        if (count($this->fileWhitelist)) {
-            return DataHandling::matchesFilterInsensitive($filename, $this->fileWhitelist);
-        }
-
-        return !DataHandling::matchesFilterInsensitive($filename, $this->fileBlacklist);
+        return true;
     }
 
     /**

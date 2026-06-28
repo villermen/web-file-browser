@@ -3,8 +3,8 @@
 namespace Villermen\WebFileBrowser\Service;
 
 use Symfony\Component\HttpFoundation\Request;
-use Villermen\DataHandling\DataHandling;
-use Villermen\DataHandling\DataHandlingException;
+use Villermen\DataHandling\Path;
+use Villermen\WebFileBrowser\Exception\UrlGeneratorException;
 
 /**
  * Allows generation of URLs to browser and data directories.
@@ -16,15 +16,18 @@ class UrlGenerator
     private readonly string $browserBaseDirectory;
 
     /**
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     public function __construct(
         private readonly Configuration $configuration,
         Request $request
     ) {
         // Parse browser base URL and directory
-        $this->browserBaseUrl = DataHandling::encodeUri(DataHandling::formatDirectory('/', $request->getBasePath()));
-        $this->browserBaseDirectory = DataHandling::formatAndResolveDirectory($request->server->get('DOCUMENT_ROOT'), $request->getBasePath());
+        $this->browserBaseUrl = htmlspecialchars(Path::format('/', $request->getBasePath(), '/'));
+        $this->browserBaseDirectory = Path::format($request->server->get('DOCUMENT_ROOT'), $request->getBasePath(), '/');
+        if (!is_dir($this->browserBaseDirectory)) {
+            throw new UrlGeneratorException(sprintf('Failed to resolve browser base directory "%s".', $this->browserBaseDirectory));
+        }
     }
 
     /**
@@ -62,41 +65,51 @@ class UrlGenerator
     /**
      * Returns a data URL for the given absolute path.
      *
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     public function getUrl(string $path): string
     {
-        return DataHandling::encodeUri(DataHandling::formatPath($this->getBaseUrl(), DataHandling::makePathRelative($path, $this->getBaseDirectory())));
+        return htmlspecialchars(Path::format($this->getBaseUrl(), $this->getRelativePath($path)));
     }
 
     /**
      * Returns a path relative to the data root based on the given absolute path.
      *
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     public function getRelativePath(string $absolutePath): string
     {
-        return DataHandling::makePathRelative($absolutePath, $this->getBaseDirectory());
+        $relativePath = Path::makeRelative($absolutePath, $this->getBaseDirectory());
+        if ($relativePath === null) {
+            throw new UrlGeneratorException(sprintf('Failed to create relative path for "%s".', $absolutePath));
+        }
+
+        return $relativePath;
     }
 
     /**
      * Returns a file browser URL for the given absolute path.
      *
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     public function getBrowserUrl(string $path): string
     {
-        return DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), DataHandling::makePathRelative($path, $this->getBrowserBaseDirectory())));
+        $relativePath = Path::makeRelative($path, $this->getBrowserBaseDirectory());
+        if ($relativePath === null) {
+            throw new UrlGeneratorException(sprintf('Unable to make path "%s" relative.', $path));
+        }
+
+        return htmlspecialchars(Path::format($this->getBrowserBaseUrl(), $relativePath));
     }
 
     /**
      * Returns a file browser URL for the given path to a data directory or file.
      *
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     public function getBrowserUrlFromDataPath(string $path): string
     {
-        $browserUrl = DataHandling::encodeUri(DataHandling::formatPath($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
+        $browserUrl = htmlspecialchars(Path::format($this->getBrowserBaseUrl(), $this->getRelativePath($path)));
 
         // Trailing slash might have been removed by getRelativePath(). Add back in.
         if (str_ends_with($path, '/') && !str_ends_with($browserUrl, '/')) {

@@ -4,8 +4,7 @@ namespace Villermen\WebFileBrowser\Service;
 
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
-use Villermen\DataHandling\DataHandling;
-use Villermen\DataHandling\DataHandlingException;
+use Villermen\DataHandling\Path;
 use Villermen\WebFileBrowser\Exception\ConfigurationException;
 
 class Configuration
@@ -30,19 +29,18 @@ class Configuration
         }
 
         // Parse and verify root directory
-        try {
-            $this->resolvedConfiguration['root'] = DataHandling::formatAndResolveDirectory($this->resolvedConfiguration['root']);
-        } catch (DataHandlingException $ex) {
-            throw new ConfigurationException('root config option does not point to a valid directory.', 0, $ex);
+        $this->resolvedConfiguration['root'] = Path::format($this->resolvedConfiguration['root']);
+        if (!is_dir($this->resolvedConfiguration['root'])) {
+            throw new ConfigurationException('"root" config option does not point to a valid directory.');
         }
 
         // Parse webroot
-        $this->resolvedConfiguration['webroot'] = DataHandling::encodeUri(DataHandling::formatDirectory($this->resolvedConfiguration['webroot']));
+        $this->resolvedConfiguration['webroot'] = htmlspecialchars(Path::format($this->resolvedConfiguration['webroot'], '/'));
 
         // Normalize directories
         $parsedDirectorySettings = [];
         foreach($this->resolvedConfiguration['directories'] as $directory => $directorySettings) {
-            $directory = DataHandling::formatDirectory($this->resolvedConfiguration['root'], $directory);
+            $directory = Path::format($this->resolvedConfiguration['root'], $directory, '/');
             $parsedDirectorySettings[$directory] = $directorySettings;
         }
         $this->resolvedConfiguration['directories'] = $parsedDirectorySettings;
@@ -57,7 +55,7 @@ class Configuration
      */
     public function getDirectory(string $directory): Directory
     {
-        $directory = DataHandling::formatDirectory($directory);
+        $directory = Path::format($directory, '/');
 
         if (isset($this->cachedDirectories[$directory])) {
             return $this->cachedDirectories[$directory];
@@ -70,13 +68,14 @@ class Configuration
         // Parse configuration to find this or the first recursive parent directory
         $directoryConfig = false;
         $configDirectory = '';
-        try {
-            $relativeDirectoryParts = explode('/', DataHandling::makePathRelative($directory, $this->getRoot()));
-        } catch (DataHandlingException $exception) {
-            throw new ConfigurationException(sprintf('Directory "%s" does not fall under the configured root.', $directory), previous: $exception);
+        $relativeDirectory = Path::makeRelative($directory, $this->getRoot());
+        if ($relativeDirectory === null) {
+            throw new ConfigurationException(sprintf('Directory "%s" does not fall under the configured root.', $directory));
         }
+
+        $relativeDirectoryParts = explode('/', $relativeDirectory);
         for ($i = count($relativeDirectoryParts) - 1; $i >= 0; $i--) {
-            $configDirectory = DataHandling::formatDirectory($this->getRoot(), implode('/', array_slice($relativeDirectoryParts, 0, $i)));
+            $configDirectory = Path::format($this->getRoot(), implode('/', array_slice($relativeDirectoryParts, 0, $i)), '/');
 
             $directoryConfig = $this->resolvedConfiguration['directories'][$configDirectory] ?? false;
 

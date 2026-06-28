@@ -7,10 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use Villermen\DataHandling\DataHandling;
-use Villermen\DataHandling\DataHandlingException;
+use Villermen\DataHandling\Path;
 use Villermen\WebFileBrowser\Exception\ArchiverException;
-use Villermen\WebFileBrowser\Exception\ConfigurationException;
+use Villermen\WebFileBrowser\Exception\UrlGeneratorException;
 use Villermen\WebFileBrowser\Service\Archiver;
 use Villermen\WebFileBrowser\Service\Configuration;
 use Villermen\WebFileBrowser\Service\Directory;
@@ -44,8 +43,9 @@ class App
         try {
             $configuration = new Configuration($this->configFile);
             $urlGenerator = new UrlGenerator($configuration, $request);
+            dd($configuration, $urlGenerator);
 
-            $requestedDirectory = DataHandling::formatDirectory($configuration->getRoot(), $request->getPathInfo());
+            $requestedDirectory = Path::format($configuration->getRoot(), $request->getPathInfo());
 
             $accessible = $configuration->isDirectoryAccessible($requestedDirectory, $reason);
 
@@ -80,7 +80,7 @@ class App
     }
 
     /**
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      * @throws \Twig\Error
      */
     private function showListing(Configuration $configuration, UrlGenerator $urlGenerator, Directory $directory): Response
@@ -97,7 +97,7 @@ class App
 
     /**
      * @throws ArchiverException
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     private function prepareDownload(Archiver $archiver, UrlGenerator $urlGenerator): JsonResponse
     {
@@ -139,7 +139,6 @@ class App
      * Construct path parts for navigation.
      *
      * @return array<array{name: string, href: string}>
-     * @throws DataHandlingException
      */
     private function getPathParts(string $path, Configuration $configuration, UrlGenerator $urlGenerator): array
     {
@@ -153,7 +152,7 @@ class App
         $pathParts = [];
         for($i = 0; $i < count($relativePathParts); $i++) {
 
-            $absolutePath = DataHandling::formatDirectory($configuration->getRoot(), ...array_slice($relativePathParts, 0, $i + 1));
+            $absolutePath = Path::format($configuration->getRoot(), ...array_slice($relativePathParts, 0, $i + 1));
 
             // Add an href only if possible
             $href = '';

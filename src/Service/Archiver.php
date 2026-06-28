@@ -2,9 +2,9 @@
 
 namespace Villermen\WebFileBrowser\Service;
 
-use Villermen\DataHandling\DataHandling;
-use Villermen\DataHandling\DataHandlingException;
+use Villermen\DataHandling\Path;
 use Villermen\WebFileBrowser\Exception\ArchiverException;
+use Villermen\WebFileBrowser\Exception\UrlGeneratorException;
 use ZipArchive;
 
 class Archiver
@@ -21,7 +21,6 @@ class Archiver
 
     /**
      * @throws ArchiverException
-     * @throws DataHandlingException
      */
     public function __construct(
         private readonly Configuration $configuration,
@@ -219,7 +218,7 @@ class Archiver
     }
 
     /**
-     * @throws DataHandlingException
+     * @throws UrlGeneratorException
      */
     private function createArchivePath(): string
     {
@@ -245,8 +244,10 @@ class Archiver
             $basename = 'root';
         }
 
-        return DataHandling::formatPath(
-            $this->cacheDirectory, $this->directoryChecksum . $this->contentChecksum, $basename . '.zip'
+        return Path::format(
+            $this->cacheDirectory,
+            $this->directoryChecksum . $this->contentChecksum,
+            $basename . '.zip',
         );
     }
 
@@ -255,7 +256,7 @@ class Archiver
      */
     private function createCacheDirectory(): string
     {
-        $cacheDirectory = DataHandling::formatDirectory($this->urlGenerator->getBrowserBaseDirectory(), 'cache');
+        $cacheDirectory = Path::format($this->urlGenerator->getBrowserBaseDirectory(), 'cache/');
         if (!is_dir($cacheDirectory) && !mkdir($cacheDirectory, 0775)) {
             throw new ArchiverException('Failed to create cache directory.');
         }
