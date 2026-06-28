@@ -43,7 +43,6 @@ class App
         try {
             $configuration = new Configuration($this->configFile);
             $urlGenerator = new UrlGenerator($configuration, $request);
-            dd($configuration, $urlGenerator);
 
             $requestedDirectory = Path::format($configuration->getRoot(), $request->getPathInfo());
 
