@@ -5,9 +5,9 @@
     "require": {
         "php": ">=8.3",
         "ext-zip": "*",
-        "symfony/http-foundation": "^7.4.13",
-        "symfony/yaml": "^7.4.13",
-        "twig/twig": "^3.27.1",
+        "symfony/http-foundation": "^7.4.22",
+        "symfony/yaml": "^7.4.22",
+        "twig/twig": "^3.30.0",
         "villermen/data-handling": "^2.1.0"
     },
     "config": {
@@ -28,7 +28,7 @@
         "psr-4": { "Villermen\\WebFileBrowser\\": "src/" }
     },
     "require-dev": {
-        "symfony/var-dumper": "^7.4.8"
+        "symfony/var-dumper": "^7.4.22"
     },
     "scripts": {
         "dev-server": [
